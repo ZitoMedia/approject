@@ -1,0 +1,19 @@
+# Ignored files
+
+# Eclipse files
+.*
+**/.*
+
+
+# Build files
+zitomedia-ap-repo/target/*
+zitomedia-ap-repo/alf_data_dev/*
+zitomedia-ap-share/target/*
+
+build.properties
+
+#IntelliJ files
+*.iml
+*.ipr
+*.iws
+.idea/

@@ -1,0 +1,36 @@
+<alfresco-config>
+
+    <!-- Global config section -->
+    <config replace="true">
+        <flags>
+            <!-- Developer debugging setting to turn on DEBUG mode for client scripts
+              in the browser -->
+            <client-debug>true</client-debug>
+            <!-- LOGGING can always be toggled at runtime when in DEBUG mode (Ctrl,
+              Ctrl, Shift, Shift). This flag automatically activates logging on page load. -->
+            <client-debug-autologging>false</client-debug-autologging>
+        </flags>
+    </config>
+
+    <!-- Document Library config section -->
+    <!-- Controls the display of aspects and types in the various UI          -->
+    <!-- components (i.e.  Manage Aspects, Change Type, etc.)                 -->
+    <config evaluator="string-compare" condition="DocumentLibrary">
+        <aspects>
+            <!-- Aspects that a user can see -->
+            <visible>
+            </visible>
+
+            <!-- Aspects that a user can add. Same as "visible" if left empty -->
+            <addable>
+            </addable>
+
+            <!-- Aspects that a user can remove. Same as "visible" if left empty -->
+            <removeable>
+            </removeable>
+        </aspects>
+
+        <types>
+        </types>
+    </config>
+</alfresco-config>

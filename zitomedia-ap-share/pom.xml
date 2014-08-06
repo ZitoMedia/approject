@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.zitomedia</groupId>
+    <artifactId>zitomedia-ap-share</artifactId>
+    <version>1.0.1-SNAPSHOT</version>
+    <name>zitomedia-ap-share AMP project</name>
+    <packaging>amp</packaging>
+    <description>Manages the lifecycle of the zitomedia-ap-share AMP (Alfresco Module Package)</description>
+
+    <parent>
+        <groupId>com.zitomedia</groupId>
+        <artifactId>zitomedia-ap-alfresco</artifactId>
+        <version>1.0.1-SNAPSHOT</version>
+    </parent>
+    <properties>
+        <!-- Defines the target WAR artifactId to run this amp, only used with the -Pamp-to-war switch
+.    | Allowed values: alfresco | share. Defaults to a repository AMP, but could point to your foundation WAR -->
+        <alfresco.client.war>share</alfresco.client.war>
+    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.extensions.surf</groupId>
+            <artifactId>spring-surf</artifactId>
+            <version>${spring.surf.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.extensions.surf</groupId>
+            <artifactId>spring-webscripts</artifactId>
+            <version>${spring.surf.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.extensions.surf</groupId>
+            <artifactId>spring-webscripts-api</artifactId>
+            <version>${spring.surf.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <!--
+        <dependency>
+            <groupId>org.alfresco</groupId>
+            <artifactId>alfresco-share</artifactId>
+            <version>${alfresco.version}</version>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.alfresco</groupId>
+                    <artifactId>alfresco-web-framework-commons</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        -->
+        <dependency>
+            <groupId>${alfresco.groupId}</groupId>
+            <artifactId>alfresco-web-framework-commons</artifactId>
+            <version>${alfresco.version}</version>
+            <type>war</type>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>net.alchim31.maven</groupId>
+                <artifactId>yuicompressor-maven-plugin</artifactId>
+                <version>1.3.2</version>
+                <executions>
+                    <execution>
+                        <id>minimize-zitomedia-ap-js-css</id>
+                        <goals>
+                            <goal>compress</goal>
+                        </goals>
+                        <phase>prepare-package</phase>
+                    </execution>
+                </executions>
+                <configuration>
+                    <jswarn>false</jswarn>
+                    <encoding>UTF-8</encoding>
+                    <includes>
+                        <include>**/*.js</include>
+                        <include>**/*.css</include>
+                    </includes>
+                    <!-- We don't need to minimize webscript js -->
+                    <excludes>
+                        <exclude>**/*.min.css</exclude>
+                        <exclude>**/*-min.js</exclude>
+                        <exclude>**/*.min.js</exclude>
+                        <exclude>**/*.get.js</exclude>
+                        <exclude>**/*.post.js</exclude>
+                        <exclude>**/*.delete.js</exclude>
+                        <exclude>**/*.put.js</exclude>
+                    </excludes>
+                    <sourceDirectory>${project.build.directory}/${project.build.finalName}</sourceDirectory>
+                    <outputDirectory>${project.build.directory}/${project.build.finalName}</outputDirectory>
+                    <excludeResources>true</excludeResources>
+                    <!-- <nocompress>true</nocompress> -->
+                    <!-- <disableOptimizations>true</disableOptimizations> -->
+                    <!-- <nosuffix>true</nosuffix> -->
+                    <!-- <preserveAllSemiColons>true</preserveAllSemiColons> -->
+                    <!-- <nomunge>true</nomunge> -->
+                    <!--
+                    <aggregations>
+                        <aggregation>
+                            <output>${project.build.directory}/${project.build.finalName}/js/yui-common.js</output>
+                            <includes>
+                                <include>${project.build.directory}/${project.build.finalName}/yui/utilities/utilities.js</include>
+                            </includes>
+                        </aggregation>
+                    </aggregations>
+                    -->
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.4</version>
+                <inherited>true</inherited>
+                <configuration>
+                    <descriptors>
+                        <descriptor>src/main/assembly/assembly.xml</descriptor>
+                    </descriptors>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <inherited>true</inherited>
+                        <!-- bind to the packaging phase -->
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <inherited>false</inherited>
+                <executions>
+                    <execution>
+                        <id>install</id>
+                        <phase>package</phase>
+                        <configuration>
+                            <tasks>
+                                <taskdef resource="net/sf/antcontrib/antcontrib.properties"
+                                         classpathref="maven.plugin.classpath"/>
+                                <ant antfile="build.xml">
+                                    <target name="install"/>
+                                </ant>
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>ant-contrib</groupId>
+                        <artifactId>ant-contrib</artifactId>
+                        <version>1.0b3</version>
+                        <exclusions>
+                            <exclusion>
+                                <artifactId>ant</artifactId>
+                                <groupId>ant</groupId>
+                            </exclusion>
+                        </exclusions>
+                    </dependency>
+                </dependencies>
+            </plugin>
+        </plugins>
+    </build>
+</project>

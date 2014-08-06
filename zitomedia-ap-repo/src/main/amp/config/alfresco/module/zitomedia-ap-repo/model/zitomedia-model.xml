@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<model xmlns="http://www.alfresco.org/model/dictionary/1.0" name="zitomedia:model">
+
+  <description>ZitoMedia Content Model</description>
+  <author>NextFrontier Tech Inc.</author>
+  <version>1.0</version>
+
+  <imports>
+    <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d"/>
+    <import uri="http://www.alfresco.org/model/content/1.0"    prefix="cm"/>
+    <import uri="http://www.alfresco.org/model/system/1.0"     prefix="sys"/>
+    <import uri="http://www.alfresco.org/model/datalist/1.0"   prefix="dl"/>
+  </imports>
+
+  <namespaces>
+    <namespace uri="http://www.zitomedia.com/model/content/1.0" prefix="zitomedia"/>
+  </namespaces>
+
+  <types>
+  </types>
+  
+  <aspects>
+  </aspects>
+  
+  
+</model>

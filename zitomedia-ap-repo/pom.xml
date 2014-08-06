@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.zitomedia</groupId>
+    <artifactId>zitomedia-ap-repo</artifactId>
+    <version>1.0.1-SNAPSHOT</version>
+    <name>zitomedia-ap-repo AMP project</name>
+    <packaging>amp</packaging>
+    <description>Manages the lifecycle of the zitomedia-ap-repo AMP (Alfresco Module Package)</description>
+
+    <parent>
+        <groupId>com.zitomedia</groupId>
+        <artifactId>zitomedia-ap-alfresco</artifactId>
+        <version>1.0.1-SNAPSHOT</version>
+    </parent>
+    <properties>
+        <!-- Defines the target WAR artifactId to run this amp, only used with the -Pamp-to-war switch
+.    | Allowed values: alfresco | share. Defaults to a repository AMP, but could point to your foundation WAR -->
+        <alfresco.client.war>alfresco</alfresco.client.war>
+    </properties>
+    <!-- ====================================================================== -->
+    <!-- Dependencies -->
+    <!-- ====================================================================== -->
+    <dependencies>
+        <dependency>
+            <groupId>${alfresco.groupId}</groupId>
+            <artifactId>alfresco-core</artifactId>
+            <version>${alfresco.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>${alfresco.groupId}</groupId>
+            <artifactId>alfresco-data-model</artifactId>
+            <version>${alfresco.version}</version>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.jvnet.staxex</groupId>
+                    <artifactId>stax-ex</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>${alfresco.groupId}</groupId>
+            <artifactId>alfresco-jlan-embed</artifactId>
+            <version>${alfresco.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>${alfresco.groupId}</groupId>
+            <artifactId>alfresco-remote-api</artifactId>
+            <version>${alfresco.version}</version>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.jvnet.staxex</groupId>
+                    <artifactId>stax-ex</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>rome</groupId>
+                    <artifactId>rome</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>${alfresco.groupId}</groupId>
+            <artifactId>alfresco-repository</artifactId>
+            <version>${alfresco.version}</version>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.jvnet.staxex</groupId>
+                    <artifactId>stax-ex</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+       <!--
+        <dependency>
+            <groupId>${alfresco.groupId}</groupId>
+            <artifactId>alfresco-web-client</artifactId>
+            <version>${alfresco.version}</version>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.jvnet.staxex</groupId>
+                    <artifactId>stax-ex</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>rome</groupId>
+                    <artifactId>rome</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.alfresco</groupId>
+                    <artifactId>alfresco-web-framework-commons</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        -->
+        <dependency>
+            <groupId>${alfresco.groupId}</groupId>
+            <artifactId>alfresco-web-framework-commons</artifactId>
+            <version>${alfresco.version}</version>
+            <type>war</type>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <version>${spring.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+            <version>${spring.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-net</groupId>
+            <artifactId>commons-net</artifactId>
+            <version>2.0</version>
+            <scope>provided</scope>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20080701</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!--
+        <dependency>
+            <groupId>com.thoughtworks.xstream</groupId>
+            <artifactId>xstream</artifactId>
+            <version>1.2.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>de.schlichtherle.io</groupId>
+            <artifactId>truezip</artifactId>
+            <version>6.6</version>
+        </dependency>
+        -->
+        <dependency>
+            <groupId>org.springframework.extensions.surf</groupId>
+            <artifactId>spring-webscripts</artifactId>
+            <version>${spring.surf.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.extensions.surf</groupId>
+            <artifactId>spring-webscripts-api</artifactId>
+            <version>${spring.surf.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-core</artifactId>
+            <version>2.4.1</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.8.1</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>xerces</groupId>
+            <artifactId>xercesImpl</artifactId>
+            <version>2.8.0</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.4</version>
+                <inherited>true</inherited>
+                <configuration>
+                    <descriptors>
+                        <descriptor>src/main/assembly/assembly.xml</descriptor>
+                    </descriptors>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <inherited>true</inherited>
+                        <!-- bind to the packaging phase -->
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <inherited>false</inherited>
+                <executions>
+                    <execution>
+                        <id>install</id>
+                        <phase>package</phase>
+                        <configuration>
+                            <tasks>
+                                <taskdef resource="net/sf/antcontrib/antcontrib.properties"
+                                         classpathref="maven.plugin.classpath"/>
+                                <ant antfile="build.xml">
+                                    <target name="install"/>
+                                </ant>
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>ant-contrib</groupId>
+                        <artifactId>ant-contrib</artifactId>
+                        <version>1.0b3</version>
+                        <exclusions>
+                            <exclusion>
+                                <artifactId>ant</artifactId>
+                                <groupId>ant</groupId>
+                            </exclusion>
+                        </exclusions>
+                    </dependency>
+                </dependencies>
+            </plugin>
+        </plugins>
+    </build>
+</project>
