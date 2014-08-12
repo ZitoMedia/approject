@@ -1,0 +1,20 @@
+<view:view xmlns:view="http://www.alfresco.org/view/repository/1.0"
+           xmlns:cm="http://www.alfresco.org/model/content/1.0"
+           xmlns:app="http://www.alfresco.org/model/application/1.0">
+    <cm:content view:childName="cm:start-zitomedia-ap-review-approval-workflow.js">
+        <view:aspects>
+            <cm:titled/>
+            <cm:author/>
+            <app:inlineeditable/>
+        </view:aspects>
+        <view:properties>
+            <app:editInline>true</app:editInline>
+            <cm:description>Start Zito Media AP Review and Approval Workflow</cm:description>
+            <cm:content>contentUrl=classpath:alfresco/module/zitomedia-ap-repo/bootstrap/start-zitomedia-ap-review-approval-workflow.js|mimetype=application/x-javascript|size=461|encoding=UTF-8</cm:content>
+            <cm:title>start-zitomedia-ap-review-approval-workflow.js</cm:title>
+            <cm:author>admin</cm:author>
+            <cm:name>start-zitomedia-ap-review-approval-workflow.js</cm:name>
+        </view:properties>
+        <view:associations></view:associations>
+    </cm:content>
+</view:view>

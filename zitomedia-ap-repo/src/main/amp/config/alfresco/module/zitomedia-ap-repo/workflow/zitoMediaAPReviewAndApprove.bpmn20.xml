@@ -1,0 +1,352 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://activiti.org/bpmn20">
+    <process id="ZitomediaMultiLevelReview" name="Zitomedia Review And Approve Activiti Process" isExecutable="true">
+        <startEvent id="start" activiti:formKey="wf:submitReviewTask"></startEvent>
+        <sequenceFlow id="flow1" sourceRef="start" targetRef="supervisorReviewTask"></sequenceFlow>
+        <userTask id="supervisorReviewTask" name="Supervisor Review Task" activiti:candidateGroups="GROUP_ZITOMEDIA_SUPERVISORS" activiti:formKey="zitomediawf:zitoMediaSupervisorReviewTask">
+            <extensionElements>
+                <activiti:taskListener event="create" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
+                    <activiti:field name="script">
+                        <activiti:string>if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate
+                            if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;</activiti:string>
+                    </activiti:field>
+                </activiti:taskListener>
+                <activiti:taskListener event="complete" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
+                    <activiti:field name="script">
+                        <activiti:string>execution.setVariable('wf_reviewOutcome', task.getVariable('wf_reviewOutcome'));
+                            execution.setVariable('bpm_assignee', person);</activiti:string>
+                    </activiti:field>
+                </activiti:taskListener>
+            </extensionElements>
+        </userTask>
+        <sequenceFlow id="flow2" sourceRef="supervisorReviewTask" targetRef="supervisorReviewDecision"></sequenceFlow>
+        <exclusiveGateway id="supervisorReviewDecision" name="Supervisor Review Decision"></exclusiveGateway>
+        <sequenceFlow id="flow3" sourceRef="supervisorReviewDecision" targetRef="supervisorApproved">
+            <conditionExpression xsi:type="tFormalExpression"><![CDATA[${wf_reviewOutcome == 'Approve'}]]></conditionExpression>
+        </sequenceFlow>
+        <sequenceFlow id="flow4" sourceRef="supervisorReviewDecision" targetRef="supervisorRejected">
+            <conditionExpression xsi:type="tFormalExpression"><![CDATA[${wf_reviewOutcome == 'Rejected'}]]></conditionExpression>
+        </sequenceFlow>
+        <userTask id="supervisorApproved" name="Supervisor Approved" activiti:assignee="${bpm_assignee.properties.userName}" activiti:formKey="wf:approvedTask">
+            <documentation>The document was reviewed and approved by supervisor.</documentation>
+            <extensionElements>
+                <activiti:taskListener event="create" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
+                    <activiti:field name="script">
+                        <activiti:string>if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate
+                            if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;</activiti:string>
+                    </activiti:field>
+                </activiti:taskListener>
+                <activiti:taskListener event="complete" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
+                    <activiti:field name="script">
+                        <activiti:string>for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
+                                var payload = bpm_package.children[i];
+                                var dest = payload.parent.parent.childByNamePath('AP');
+                                payload.move(dest);
+                            }
+                        </activiti:string>
+                    </activiti:field>
+                </activiti:taskListener>
+            </extensionElements>
+        </userTask>
+        <sequenceFlow id="flow5" sourceRef="supervisorApproved" targetRef="apReviewTask"></sequenceFlow>
+        <userTask id="supervisorRejected" name="Supervisor Rejected" activiti:assignee="${initiator.properties.userName}" activiti:formKey="wf:rejectedTask">
+            <documentation>The document was reviewed and rejected by supervisor.</documentation>
+            <extensionElements>
+                <activiti:taskListener event="create" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
+                    <activiti:field name="script">
+                        <activiti:string>if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate
+                            if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;</activiti:string>
+                    </activiti:field>
+                </activiti:taskListener>
+            </extensionElements>
+        </userTask>
+        <sequenceFlow id="flow6" sourceRef="supervisorRejected" targetRef="endevent1"></sequenceFlow>
+        <userTask id="apReviewTask" name="AP Review Task" activiti:candidateGroups="GROUP_ZITOMEDIA_AP" activiti:formKey="zitomediawf:zitoMediaAPReviewTask">
+            <extensionElements>
+                <activiti:taskListener event="create" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
+                    <activiti:field name="script">
+                        <activiti:string>if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate
+                            if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;
+                            for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
+                                if (!bpm_package.children[i].hasAspect('zitomedia:ap')) {
+                                    bpm_package.children[i].addAspect('zitomedia:ap');
+                                    bpm_package.children[i].save();
+                                }
+                                task.setVariableLocal('zitomediawf_vouchNumber', bpm_package.children[i].properties['zitomedia:voucherNumber']);
+                            }
+                        </activiti:string>
+                    </activiti:field>
+                </activiti:taskListener>
+                <activiti:taskListener event="complete" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
+                    <activiti:field name="script">
+                        <activiti:string>execution.setVariable('wf_reviewOutcome', task.getVariable('wf_reviewOutcome'));
+                            for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
+                                bpm_package.children[i].properties['zitomedia:voucherNumber'] = task.getVariable('zitomediawf_vouchNumber');
+                                bpm_package.children[i].save();
+                            }
+                            execution.setVariable('bpm_assignee', person);
+                        </activiti:string>
+                    </activiti:field>
+                </activiti:taskListener>
+            </extensionElements>
+        </userTask>
+        <exclusiveGateway id="finalReviewDecision" name="Final Review Decision"></exclusiveGateway>
+        <sequenceFlow id="flow7" sourceRef="apReviewTask" targetRef="apReviewDecision"></sequenceFlow>
+        <userTask id="apApproved" name="AP Approved" activiti:assignee="${bpm_assignee.properties.userName}" activiti:formKey="wf:approvedTask">
+            <documentation>The document was reviewed and approved by AP.</documentation>
+            <extensionElements>
+                <activiti:taskListener event="create" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
+                    <activiti:field name="script">
+                        <activiti:string>if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate
+                            if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;</activiti:string>
+                    </activiti:field>
+                </activiti:taskListener>
+                <activiti:taskListener event="complete" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
+                    <activiti:field name="script">
+                        <activiti:string>for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
+                            var payload = bpm_package.children[i];
+                            var dest = payload.parent.parent.childByNamePath('Final');
+                            payload.move(dest);
+                            }
+                        </activiti:string>
+                    </activiti:field>
+                </activiti:taskListener>
+            </extensionElements>
+        </userTask>
+        <sequenceFlow id="flow8" sourceRef="apReviewDecision" targetRef="apApproved">
+            <conditionExpression xsi:type="tFormalExpression"><![CDATA[${wf_reviewOutcome == 'Approve'}]]></conditionExpression>
+        </sequenceFlow>
+        <userTask id="apRejected" name="AP Rejected" activiti:assignee="${initiator.properties.userName}" activiti:formKey="wf:rejectedTask">
+            <documentation>The document was reviewed and rejected by AP.</documentation>
+            <extensionElements>
+                <activiti:taskListener event="create" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
+                    <activiti:field name="script">
+                        <activiti:string>if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate
+                            if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;</activiti:string>
+                    </activiti:field>
+                </activiti:taskListener>
+            </extensionElements>
+        </userTask>
+        <sequenceFlow id="flow9" sourceRef="apReviewDecision" targetRef="apRejected">
+            <conditionExpression xsi:type="tFormalExpression"><![CDATA[${wf_reviewOutcome == 'Rejected'}]]></conditionExpression>
+        </sequenceFlow>
+        <sequenceFlow id="flow11" sourceRef="apRejected" targetRef="supervisorReviewTask"></sequenceFlow>
+        <userTask id="finalReviewTask" name="Final Review Task" activiti:assignee="james" activiti:formKey="zitomediawf:zitoMediaFinalReviewTask">
+            <extensionElements>
+                <activiti:taskListener event="create" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
+                    <activiti:field name="script">
+                        <activiti:string>if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate
+                            if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;</activiti:string>
+                    </activiti:field>
+                </activiti:taskListener>
+                <activiti:taskListener event="complete" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
+                    <activiti:field name="script">
+                        <activiti:string>execution.setVariable('wf_reviewOutcome', task.getVariable('wf_reviewOutcome'));
+                            execution.setVariable('bpm_assignee', person);</activiti:string>
+                    </activiti:field>
+                </activiti:taskListener>
+            </extensionElements>
+        </userTask>
+        <sequenceFlow id="flow10" sourceRef="apApproved" targetRef="finalReviewTask"></sequenceFlow>
+        <exclusiveGateway id="apReviewDecision" name="AP Review Decision"></exclusiveGateway>
+        <sequenceFlow id="flow12" sourceRef="finalReviewTask" targetRef="finalReviewDecision"></sequenceFlow>
+        <userTask id="finalApproved" name="Final Approved" activiti:assignee="${bpm_assignee.properties.userName}" activiti:formKey="wf:approvedTask">
+            <documentation>The document was reviewed and approved by James.</documentation>
+            <extensionElements>
+                <activiti:taskListener event="create" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
+                    <activiti:field name="script">
+                        <activiti:string>if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate
+                            if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;</activiti:string>
+                    </activiti:field>
+                </activiti:taskListener>
+                <activiti:taskListener event="complete" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
+                    <activiti:field name="script">
+                        <activiti:string>for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
+                            var payload = bpm_package.children[i];
+                            var dest = payload.parent.parent.childByNamePath('AP');
+                            payload.move(dest);
+                            }
+                        </activiti:string>
+                    </activiti:field>
+                </activiti:taskListener>
+            </extensionElements>
+        </userTask>
+        <sequenceFlow id="flow13" sourceRef="finalReviewDecision" targetRef="finalApproved">
+            <conditionExpression xsi:type="tFormalExpression"><![CDATA[${wf_reviewOutcome == 'Approve'}]]></conditionExpression>
+        </sequenceFlow>
+        <userTask id="finalRejected" name="Final Rejected" activiti:assignee="${initiator.properties.userName}" activiti:formKey="wf:rejectedTask">
+            <documentation>The document was reviewed and rejected by James.</documentation>
+            <extensionElements>
+                <activiti:taskListener event="create" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
+                    <activiti:field name="script">
+                        <activiti:string>if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate
+                            if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;</activiti:string>
+                    </activiti:field>
+                </activiti:taskListener>
+            </extensionElements>
+        </userTask>
+        <sequenceFlow id="flow14" sourceRef="finalReviewDecision" targetRef="finalRejected">
+            <conditionExpression xsi:type="tFormalExpression"><![CDATA[${wf_reviewOutcome == 'Rejected'}]]></conditionExpression>
+        </sequenceFlow>
+        <sequenceFlow id="flow16" sourceRef="finalRejected" targetRef="apReviewTask"></sequenceFlow>
+        <userTask id="payCustomer" name="Pay Customer" activiti:candidateGroups="GROUP_ZITOMEDIA_AP" activiti:formKey="zitomediawf:zitoMediaPayCustomerTask">
+            <documentation>The invoice has been approved and invoice needs to send to customer.</documentation>
+            <extensionElements>
+                <activiti:taskListener event="create" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
+                    <activiti:field name="script">
+                        <activiti:string>if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate
+                            if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;</activiti:string>
+                    </activiti:field>
+                </activiti:taskListener>
+            </extensionElements>
+        </userTask>
+        <userTask id="processCompleted" name="Process Completed" activiti:assignee="${initiator.properties.userName}" activiti:formKey="zitomediawf:zitoMediaCompletedTask">
+            <documentation>Process completed.</documentation>
+            <extensionElements>
+                <activiti:taskListener event="create" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
+                    <activiti:field name="script">
+                        <activiti:string>if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate
+                            if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;</activiti:string>
+                    </activiti:field>
+                </activiti:taskListener>
+                <activiti:taskListener event="complete" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
+                    <activiti:field name="script">
+                        <activiti:string>for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
+                            var payload = bpm_package.children[i];
+                            var dest = payload.parent.parent.childByNamePath('Completed');
+                            payload.move(dest);
+                            }
+                        </activiti:string>
+                    </activiti:field>
+                </activiti:taskListener>
+            </extensionElements>
+        </userTask>
+        <sequenceFlow id="flow18" sourceRef="finalApproved" targetRef="payCustomer"></sequenceFlow>
+        <sequenceFlow id="flow15" sourceRef="payCustomer" targetRef="processCompleted"></sequenceFlow>
+        <endEvent id="endevent1" name="End"></endEvent>
+        <sequenceFlow id="flow17" sourceRef="processCompleted" targetRef="endevent1"></sequenceFlow>
+    </process>
+    <bpmndi:BPMNDiagram id="BPMNDiagram_activitiReview">
+        <bpmndi:BPMNPlane bpmnElement="activitiReview" id="BPMNPlane_activitiReview">
+            <bpmndi:BPMNShape bpmnElement="start" id="BPMNShape_start">
+                <omgdc:Bounds height="35.0" width="35.0" x="30.0" y="200.0"></omgdc:Bounds>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="supervisorReviewTask" id="BPMNShape_reviewTask">
+                <omgdc:Bounds height="55.0" width="105.0" x="105.0" y="190.0"></omgdc:Bounds>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="supervisorReviewDecision" id="BPMNShape_reviewDecision">
+                <omgdc:Bounds height="40.0" width="40.0" x="240.0" y="197.0"></omgdc:Bounds>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="supervisorApproved" id="BPMNShape_approved">
+                <omgdc:Bounds height="55.0" width="105.0" x="330.0" y="137.0"></omgdc:Bounds>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="supervisorRejected" id="BPMNShape_rejected">
+                <omgdc:Bounds height="55.0" width="105.0" x="330.0" y="257.0"></omgdc:Bounds>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="endevent1" id="BPMNShape_endevent1">
+                <omgdc:Bounds height="35.0" width="35.0" x="1250.0" y="267.0"></omgdc:Bounds>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="apReviewDecision" id="BPMNShape_reviewDecision1">
+                <omgdc:Bounds height="40.0" width="40.0" x="590.0" y="27.0"></omgdc:Bounds>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="finalReviewDecision" id="BPMNShape_reviewDecision2">
+                <omgdc:Bounds height="40.0" width="40.0" x="990.0" y="-133.0"></omgdc:Bounds>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="apReviewTask" id="BPMNShape_reviewTask1">
+                <omgdc:Bounds height="55.0" width="105.0" x="434.0" y="20.0"></omgdc:Bounds>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="apApproved" id="BPMNShape_approved1">
+                <omgdc:Bounds height="55.0" width="105.0" x="680.0" y="-40.0"></omgdc:Bounds>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="apRejected" id="BPMNShape_rejected1">
+                <omgdc:Bounds height="55.0" width="105.0" x="680.0" y="67.0"></omgdc:Bounds>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="finalReviewTask" id="BPMNShape_reviewTask2">
+                <omgdc:Bounds height="55.0" width="105.0" x="830.0" y="-140.0"></omgdc:Bounds>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="finalApproved" id="BPMNShape_approved2">
+                <omgdc:Bounds height="55.0" width="105.0" x="1075.0" y="-194.0"></omgdc:Bounds>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="finalRejected" id="BPMNShape_rejected2">
+                <omgdc:Bounds height="55.0" width="105.0" x="1075.0" y="-86.0"></omgdc:Bounds>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1">
+                <omgdi:waypoint x="65.0" y="217.0"></omgdi:waypoint>
+                <omgdi:waypoint x="105.0" y="217.0"></omgdi:waypoint>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="flow2" id="BPMNEdge_flow2">
+                <omgdi:waypoint x="210.0" y="217.0"></omgdi:waypoint>
+                <omgdi:waypoint x="240.0" y="217.0"></omgdi:waypoint>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="flow3" id="BPMNEdge_flow3">
+                <omgdi:waypoint x="260.0" y="197.0"></omgdi:waypoint>
+                <omgdi:waypoint x="270.0" y="164.0"></omgdi:waypoint>
+                <omgdi:waypoint x="330.0" y="164.0"></omgdi:waypoint>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="flow4" id="BPMNEdge_flow4">
+                <omgdi:waypoint x="260.0" y="237.0"></omgdi:waypoint>
+                <omgdi:waypoint x="270.0" y="284.0"></omgdi:waypoint>
+                <omgdi:waypoint x="330.0" y="284.0"></omgdi:waypoint>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="flow8" id="BPMNEdge_flow8">
+                <omgdi:waypoint x="610.0" y="27.0"></omgdi:waypoint>
+                <omgdi:waypoint x="614.0" y="-11.0"></omgdi:waypoint>
+                <omgdi:waypoint x="680.0" y="-13.0"></omgdi:waypoint>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="flow9" id="BPMNEdge_flow9">
+                <omgdi:waypoint x="610.0" y="67.0"></omgdi:waypoint>
+                <omgdi:waypoint x="614.0" y="94.0"></omgdi:waypoint>
+                <omgdi:waypoint x="680.0" y="94.0"></omgdi:waypoint>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="flow10" id="BPMNEdge_flow10">
+                <omgdi:waypoint x="785.0" y="-13.0"></omgdi:waypoint>
+                <omgdi:waypoint x="882.0" y="-13.0"></omgdi:waypoint>
+                <omgdi:waypoint x="882.0" y="-85.0"></omgdi:waypoint>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="flow11" id="BPMNEdge_flow11">
+                <omgdi:waypoint x="732.0" y="122.0"></omgdi:waypoint>
+                <omgdi:waypoint x="732.0" y="331.0"></omgdi:waypoint>
+                <omgdi:waypoint x="157.0" y="331.0"></omgdi:waypoint>
+                <omgdi:waypoint x="157.0" y="245.0"></omgdi:waypoint>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="flow12" id="BPMNEdge_flow12">
+                <omgdi:waypoint x="935.0" y="-113.0"></omgdi:waypoint>
+                <omgdi:waypoint x="990.0" y="-113.0"></omgdi:waypoint>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="flow13" id="BPMNEdge_flow13">
+                <omgdi:waypoint x="1010.0" y="-133.0"></omgdi:waypoint>
+                <omgdi:waypoint x="1009.0" y="-165.0"></omgdi:waypoint>
+                <omgdi:waypoint x="1075.0" y="-167.0"></omgdi:waypoint>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="flow14" id="BPMNEdge_flow14">
+                <omgdi:waypoint x="1010.0" y="-93.0"></omgdi:waypoint>
+                <omgdi:waypoint x="1011.0" y="-58.0"></omgdi:waypoint>
+                <omgdi:waypoint x="1075.0" y="-59.0"></omgdi:waypoint>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="flow15" id="BPMNEdge_flow15">
+                <omgdi:waypoint x="1180.0" y="-167.0"></omgdi:waypoint>
+                <omgdi:waypoint x="1267.0" y="-167.0"></omgdi:waypoint>
+                <omgdi:waypoint x="1267.0" y="267.0"></omgdi:waypoint>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="flow16" id="BPMNEdge_flow16">
+                <omgdi:waypoint x="1127.0" y="-31.0"></omgdi:waypoint>
+                <omgdi:waypoint x="1128.0" y="136.0"></omgdi:waypoint>
+                <omgdi:waypoint x="617.0" y="136.0"></omgdi:waypoint>
+                <omgdi:waypoint x="486.0" y="75.0"></omgdi:waypoint>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="flow7" id="BPMNEdge_flow7">
+                <omgdi:waypoint x="539.0" y="47.0"></omgdi:waypoint>
+                <omgdi:waypoint x="590.0" y="47.0"></omgdi:waypoint>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="flow6" id="BPMNEdge_flow6">
+                <omgdi:waypoint x="435.0" y="284.0"></omgdi:waypoint>
+                <omgdi:waypoint x="1250.0" y="284.0"></omgdi:waypoint>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="flow5" id="BPMNEdge_flow5">
+                <omgdi:waypoint x="435.0" y="164.0"></omgdi:waypoint>
+                <omgdi:waypoint x="486.0" y="163.0"></omgdi:waypoint>
+                <omgdi:waypoint x="486.0" y="75.0"></omgdi:waypoint>
+            </bpmndi:BPMNEdge>
+        </bpmndi:BPMNPlane>
+    </bpmndi:BPMNDiagram>
+</definitions>

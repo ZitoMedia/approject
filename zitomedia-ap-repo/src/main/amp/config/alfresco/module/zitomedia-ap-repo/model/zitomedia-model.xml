@@ -2,26 +2,33 @@
 
 <model xmlns="http://www.alfresco.org/model/dictionary/1.0" name="zitomedia:model">
 
-  <description>ZitoMedia Content Model</description>
-  <author>NextFrontier Tech Inc.</author>
-  <version>1.0</version>
+    <description>ZitoMedia Content Model</description>
+    <author>NextFrontier Tech Inc.</author>
+    <version>1.0</version>
 
-  <imports>
-    <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d"/>
-    <import uri="http://www.alfresco.org/model/content/1.0"    prefix="cm"/>
-    <import uri="http://www.alfresco.org/model/system/1.0"     prefix="sys"/>
-    <import uri="http://www.alfresco.org/model/datalist/1.0"   prefix="dl"/>
-  </imports>
+    <imports>
+        <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d"/>
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm"/>
+        <import uri="http://www.alfresco.org/model/system/1.0" prefix="sys"/>
+        <import uri="http://www.alfresco.org/model/datalist/1.0" prefix="dl"/>
+    </imports>
 
-  <namespaces>
-    <namespace uri="http://www.zitomedia.com/model/content/1.0" prefix="zitomedia"/>
-  </namespaces>
+    <namespaces>
+        <namespace uri="http://www.zitomedia.com/model/content/1.0" prefix="zitomedia"/>
+    </namespaces>
 
-  <types>
-  </types>
-  
-  <aspects>
-  </aspects>
-  
-  
+    <types>
+    </types>
+
+    <aspects>
+        <aspect name="zitomedia:ap">
+            <title>Account Payable</title>
+            <properties>
+                <property name="zitomedia:voucherNumber">
+                    <title>Voucher Number</title>
+                    <type>d:text</type>
+                </property>
+            </properties>
+        </aspect>
+    </aspects>
 </model>

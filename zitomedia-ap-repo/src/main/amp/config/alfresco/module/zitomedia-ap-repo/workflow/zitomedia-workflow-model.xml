@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<model name="zitomediawf:workflowmodel" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+
+    <imports>
+        <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d"/>
+        <import uri="http://www.alfresco.org/model/bpm/1.0" prefix="bpm"/>
+        <import uri="http://www.alfresco.org/model/workflow/1.0" prefix="wf"/>
+    </imports>
+
+    <namespaces>
+        <namespace uri="http://www.zitomedia.com/model/workflow/1.0" prefix="zitomediawf"/>
+    </namespaces>
+
+    <types>
+        <type name="zitomediawf:zitoMediaSupervisorReviewTask">
+            <parent>wf:activitiReviewTask</parent>
+        </type>
+        <type name="zitomediawf:zitoMediaAPReviewTask">
+            <parent>wf:activitiReviewTask</parent>
+            <properties>
+                <property name="zitomediawf:vouchNumber">
+                    <type>d:text</type>
+                </property>
+            </properties>
+        </type>
+        <type name="zitomediawf:zitoMediaFinalReviewTask">
+            <parent>wf:activitiReviewTask</parent>
+        </type>
+        <type name="zitomediawf:zitoMediaPayCustomerTask">
+            <parent>bpm:workflowTask</parent>
+        </type>
+        <type name="zitomediawf:zitoMediaCompletedTask">
+            <parent>wf:approvedTask</parent>
+        </type>
+    </types>
+</model>
