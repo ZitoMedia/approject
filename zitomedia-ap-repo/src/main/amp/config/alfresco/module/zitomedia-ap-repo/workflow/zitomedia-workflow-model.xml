@@ -18,6 +18,9 @@
         </type>
         <type name="zitomediawf:zitoMediaAPReviewTask">
             <parent>wf:activitiReviewTask</parent>
+        </type>
+        <type name="zitomediawf:zitoMediaAPProcessTask">
+            <parent>bpm:workflowTask</parent>
             <properties>
                 <property name="zitomediawf:vouchNumber">
                     <type>d:text</type>
@@ -32,6 +35,12 @@
         </type>
         <type name="zitomediawf:zitoMediaCompletedTask">
             <parent>wf:approvedTask</parent>
+        </type>
+        <type name="zitomediawf:zitoMediaAPRejectedTask">
+            <parent>wf:rejectedTask</parent>
+        </type>
+        <type name="zitomediawf:zitoMediaSupervisorRejectedTask">
+            <parent>wf:rejectedTask</parent>
         </type>
     </types>
 </model>

@@ -7,40 +7,22 @@
             <extensionElements>
                 <activiti:taskListener event="create" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
                     <activiti:field name="script">
-                        <activiti:string>if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate
+                        <activiti:string>task.description = "Supervisor reviews invoice ";
+                            if ( bpm_package.children.length &gt; 0 ) {
+                                task.description += bpm_package.children[0].properties['cm:name'];
+                            }
+                            if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate
                             if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;</activiti:string>
                     </activiti:field>
                 </activiti:taskListener>
                 <activiti:taskListener event="complete" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
                     <activiti:field name="script">
-                        <activiti:string>execution.setVariable('wf_reviewOutcome', task.getVariable('wf_reviewOutcome'));
-                            execution.setVariable('bpm_assignee', person);</activiti:string>
-                    </activiti:field>
-                </activiti:taskListener>
-            </extensionElements>
-        </userTask>
-        <sequenceFlow id="flow2" sourceRef="supervisorReviewTask" targetRef="supervisorReviewDecision"></sequenceFlow>
-        <exclusiveGateway id="supervisorReviewDecision" name="Supervisor Review Decision"></exclusiveGateway>
-        <sequenceFlow id="flow3" sourceRef="supervisorReviewDecision" targetRef="supervisorApproved">
-            <conditionExpression xsi:type="tFormalExpression"><![CDATA[${wf_reviewOutcome == 'Approve'}]]></conditionExpression>
-        </sequenceFlow>
-        <sequenceFlow id="flow4" sourceRef="supervisorReviewDecision" targetRef="supervisorRejected">
-            <conditionExpression xsi:type="tFormalExpression"><![CDATA[${wf_reviewOutcome == 'Rejected'}]]></conditionExpression>
-        </sequenceFlow>
-        <userTask id="supervisorApproved" name="Supervisor Approved" activiti:assignee="${bpm_assignee.properties.userName}" activiti:formKey="wf:approvedTask">
-            <documentation>The document was reviewed and approved by supervisor.</documentation>
-            <extensionElements>
-                <activiti:taskListener event="create" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
-                    <activiti:field name="script">
-                        <activiti:string>if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate
-                            if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;</activiti:string>
-                    </activiti:field>
-                </activiti:taskListener>
-                <activiti:taskListener event="complete" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
-                    <activiti:field name="script">
-                        <activiti:string>for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
+                        <activiti:string>var reviewOutcome = task.getVariable('wf_reviewOutcome');
+                            execution.setVariable('wf_reviewOutcome', reviewOutcome);
+                            execution.setVariable('bpm_assignee', person);
+                            for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
                                 var payload = bpm_package.children[i];
-                                var dest = payload.parent.parent.childByNamePath('AP');
+                                var dest = reviewOutcome == 'Approve' ? payload.parent.parent.childByNamePath('AP') : payload.parent.parent.childByNamePath('Rejected');
                                 payload.move(dest);
                             }
                         </activiti:string>
@@ -48,24 +30,39 @@
                 </activiti:taskListener>
             </extensionElements>
         </userTask>
-        <sequenceFlow id="flow5" sourceRef="supervisorApproved" targetRef="apReviewTask"></sequenceFlow>
-        <userTask id="supervisorRejected" name="Supervisor Rejected" activiti:assignee="${initiator.properties.userName}" activiti:formKey="wf:rejectedTask">
-            <documentation>The document was reviewed and rejected by supervisor.</documentation>
+        <sequenceFlow id="flow2" sourceRef="supervisorReviewTask" targetRef="supervisorReviewDecision"></sequenceFlow>
+        <exclusiveGateway id="supervisorReviewDecision" name="Supervisor Review Decision"></exclusiveGateway>
+        <sequenceFlow id="flow3" sourceRef="supervisorReviewDecision" targetRef="apProcessTask">
+            <conditionExpression xsi:type="tFormalExpression"><![CDATA[${wf_reviewOutcome == 'Approve'}]]></conditionExpression>
+        </sequenceFlow>
+        <sequenceFlow id="flow4" sourceRef="supervisorReviewDecision" targetRef="supervisorRejected">
+            <conditionExpression xsi:type="tFormalExpression"><![CDATA[${wf_reviewOutcome == 'Reject'}]]></conditionExpression>
+        </sequenceFlow>
+        <userTask id="supervisorRejected" name="Supervisor Rejected" activiti:assignee="${initiator.properties.userName}" activiti:formKey="zitomediawf:zitoMediaSupervisorRejectedTask">
+            <documentation>The invoice was reviewed and rejected by supervisor. Contact vendor for corrected invoice.</documentation>
             <extensionElements>
                 <activiti:taskListener event="create" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
                     <activiti:field name="script">
-                        <activiti:string>if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate
+                        <activiti:string>task.description = "Contact vendor for rejected invoice ";
+                            if ( bpm_package.children.length &gt; 0 ) {
+                                task.description += bpm_package.children[0].properties['cm:name'];
+                            }
+                            if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate
                             if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;</activiti:string>
                     </activiti:field>
                 </activiti:taskListener>
             </extensionElements>
         </userTask>
         <sequenceFlow id="flow6" sourceRef="supervisorRejected" targetRef="endevent1"></sequenceFlow>
-        <userTask id="apReviewTask" name="AP Review Task" activiti:candidateGroups="GROUP_ZITOMEDIA_AP" activiti:formKey="zitomediawf:zitoMediaAPReviewTask">
+        <userTask id="apProcessTask" name="AP Process Task" activiti:candidateGroups="GROUP_ZITOMEDIA_AP" activiti:formKey="zitomediawf:zitoMediaAPProcessTask">
             <extensionElements>
                 <activiti:taskListener event="create" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
                     <activiti:field name="script">
-                        <activiti:string>if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate
+                        <activiti:string>task.description = "AP processes supervisor approved invoice ";
+                            if ( bpm_package.children.length &gt; 0 ) {
+                                task.description += bpm_package.children[0].properties['cm:name'];
+                            }
+                            if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate
                             if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;
                             for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
                                 if (!bpm_package.children[i].hasAspect('zitomedia:ap')) {
@@ -79,122 +76,146 @@
                 </activiti:taskListener>
                 <activiti:taskListener event="complete" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
                     <activiti:field name="script">
-                        <activiti:string>execution.setVariable('wf_reviewOutcome', task.getVariable('wf_reviewOutcome'));
+                        <activiti:string>var reviewOutcome = task.getVariable('wf_reviewOutcome');
+                            execution.setVariable('wf_reviewOutcome', task.getVariable('wf_reviewOutcome'));
                             for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
                                 bpm_package.children[i].properties['zitomedia:voucherNumber'] = task.getVariable('zitomediawf_vouchNumber');
                                 bpm_package.children[i].save();
                             }
                             execution.setVariable('bpm_assignee', person);
+                            for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
+                                var payload = bpm_package.children[i];
+                                var dest = payload.parent.parent.childByNamePath('Final');
+                                payload.move(dest);
+                            }
                         </activiti:string>
                     </activiti:field>
                 </activiti:taskListener>
             </extensionElements>
         </userTask>
         <exclusiveGateway id="finalReviewDecision" name="Final Review Decision"></exclusiveGateway>
-        <sequenceFlow id="flow7" sourceRef="apReviewTask" targetRef="apReviewDecision"></sequenceFlow>
-        <userTask id="apApproved" name="AP Approved" activiti:assignee="${bpm_assignee.properties.userName}" activiti:formKey="wf:approvedTask">
-            <documentation>The document was reviewed and approved by AP.</documentation>
+        <sequenceFlow id="flow7" sourceRef="apProcessTask" targetRef="finalReviewTask"></sequenceFlow>
+        <userTask id="finalReviewTask" name="Final Review Task" activiti:assignee="james" activiti:formKey="zitomediawf:zitoMediaFinalReviewTask">
             <extensionElements>
                 <activiti:taskListener event="create" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
                     <activiti:field name="script">
-                        <activiti:string>if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate
+                        <activiti:string>task.description = "Performs final review of invoice ";
+                            if ( bpm_package.children.length &gt; 0 ) {
+                                task.description += bpm_package.children[0].properties['cm:name'];
+                            }
+                            if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate
                             if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;</activiti:string>
                     </activiti:field>
                 </activiti:taskListener>
                 <activiti:taskListener event="complete" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
                     <activiti:field name="script">
-                        <activiti:string>for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
-                            var payload = bpm_package.children[i];
-                            var dest = payload.parent.parent.childByNamePath('Final');
-                            payload.move(dest);
+                        <activiti:string>var reviewOutcome = task.getVariable('wf_reviewOutcome');
+                            execution.setVariable('wf_reviewOutcome', reviewOutcome);
+                            execution.setVariable('bpm_assignee', person);
+                            for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
+                                var payload = bpm_package.children[i];
+                                var dest = payload.parent.parent.childByNamePath('AP');
+                                payload.move(dest);
                             }
                         </activiti:string>
                     </activiti:field>
                 </activiti:taskListener>
             </extensionElements>
         </userTask>
-        <sequenceFlow id="flow8" sourceRef="apReviewDecision" targetRef="apApproved">
+        <sequenceFlow id="flow12" sourceRef="finalReviewTask" targetRef="finalReviewDecision"></sequenceFlow>
+        <sequenceFlow id="flow13" sourceRef="finalReviewDecision" targetRef="payCustomer">
             <conditionExpression xsi:type="tFormalExpression"><![CDATA[${wf_reviewOutcome == 'Approve'}]]></conditionExpression>
         </sequenceFlow>
-        <userTask id="apRejected" name="AP Rejected" activiti:assignee="${initiator.properties.userName}" activiti:formKey="wf:rejectedTask">
+        <!--
+        <userTask id="finalRejected" name="Final Rejected" activiti:assignee="${initiator.properties.userName}" activiti:formKey="wf:rejectedTask">
+            <documentation>The document was reviewed and rejected by James.</documentation>
+            <extensionElements>
+                <activiti:taskListener event="create" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
+                    <activiti:field name="script">
+                        <activiti:string>if (typeof bpm_workflowDescription != 'undefined') task.description = bpm_workflowDescription;
+                            if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate
+                            if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;</activiti:string>
+                    </activiti:field>
+                </activiti:taskListener>
+            </extensionElements>
+        </userTask>
+        -->
+        <sequenceFlow id="flow14" sourceRef="finalReviewDecision" targetRef="apReviewTask">
+            <conditionExpression xsi:type="tFormalExpression"><![CDATA[${wf_reviewOutcome == 'Reject'}]]></conditionExpression>
+        </sequenceFlow>
+        <userTask id="apReviewTask" name="AP Review Task" activiti:candidateGroups="GROUP_ZITOMEDIA_AP" activiti:formKey="zitomediawf:zitoMediaAPReviewTask">
+            <extensionElements>
+                <activiti:taskListener event="create" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
+                    <activiti:field name="script">
+                        <activiti:string>task.description = "AP reviews final rejected invoice ";
+                            if ( bpm_package.children.length &gt; 0 ) {
+                                task.description += bpm_package.children[0].properties['cm:name'];
+                            }
+                            if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate
+                            if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;
+                            for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
+                            if (!bpm_package.children[i].hasAspect('zitomedia:ap')) {
+                            bpm_package.children[i].addAspect('zitomedia:ap');
+                            bpm_package.children[i].save();
+                            }
+                            task.setVariableLocal('zitomediawf_vouchNumber', bpm_package.children[i].properties['zitomedia:voucherNumber']);
+                            }
+                        </activiti:string>
+                    </activiti:field>
+                </activiti:taskListener>
+                <activiti:taskListener event="complete" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
+                    <activiti:field name="script">
+                        <activiti:string>var reviewOutcome = task.getVariable('wf_reviewOutcome');
+                            execution.setVariable('wf_reviewOutcome', task.getVariable('wf_reviewOutcome'));
+                            execution.setVariable('bpm_assignee', person);
+                            for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
+                                var payload = bpm_package.children[i];
+                                var dest = reviewOutcome == 'Approve' ? payload.parent.parent.childByNamePath('Supervisor') : payload.parent.parent.childByNamePath('Rejected');
+                                payload.move(dest);
+                            }
+                        </activiti:string>
+                    </activiti:field>
+                </activiti:taskListener>
+            </extensionElements>
+        </userTask>
+        <exclusiveGateway id="apReviewDecision" name="AP Review Decision"></exclusiveGateway>
+        <sequenceFlow id="flow18" sourceRef="apReviewTask" targetRef="apReviewDecision"></sequenceFlow>
+        <sequenceFlow id="flow8" sourceRef="apReviewDecision" targetRef="endevent1">
+            <conditionExpression xsi:type="tFormalExpression"><![CDATA[${wf_reviewOutcome == 'Approve'}]]></conditionExpression>
+        </sequenceFlow>
+        <userTask id="apRejected" name="AP Rejected" activiti:assignee="${initiator.properties.userName}" activiti:formKey="zitomediawf:zitoMediaAPRejectedTask">
             <documentation>The document was reviewed and rejected by AP.</documentation>
             <extensionElements>
                 <activiti:taskListener event="create" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
                     <activiti:field name="script">
-                        <activiti:string>if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate
+                        <activiti:string>task.description = "Contact customer for AP rejected invoice ";
+                            if ( bpm_package.children.length &gt; 0 ) {
+                                task.description += bpm_package.children[0].properties['cm:name'];
+                            }
+                            if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate
                             if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;</activiti:string>
                     </activiti:field>
                 </activiti:taskListener>
             </extensionElements>
         </userTask>
         <sequenceFlow id="flow9" sourceRef="apReviewDecision" targetRef="apRejected">
-            <conditionExpression xsi:type="tFormalExpression"><![CDATA[${wf_reviewOutcome == 'Rejected'}]]></conditionExpression>
+            <conditionExpression xsi:type="tFormalExpression"><![CDATA[${wf_reviewOutcome == 'Reject'}]]></conditionExpression>
         </sequenceFlow>
-        <sequenceFlow id="flow11" sourceRef="apRejected" targetRef="supervisorReviewTask"></sequenceFlow>
-        <userTask id="finalReviewTask" name="Final Review Task" activiti:assignee="james" activiti:formKey="zitomediawf:zitoMediaFinalReviewTask">
-            <extensionElements>
-                <activiti:taskListener event="create" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
-                    <activiti:field name="script">
-                        <activiti:string>if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate
-                            if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;</activiti:string>
-                    </activiti:field>
-                </activiti:taskListener>
-                <activiti:taskListener event="complete" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
-                    <activiti:field name="script">
-                        <activiti:string>execution.setVariable('wf_reviewOutcome', task.getVariable('wf_reviewOutcome'));
-                            execution.setVariable('bpm_assignee', person);</activiti:string>
-                    </activiti:field>
-                </activiti:taskListener>
-            </extensionElements>
-        </userTask>
-        <sequenceFlow id="flow10" sourceRef="apApproved" targetRef="finalReviewTask"></sequenceFlow>
-        <exclusiveGateway id="apReviewDecision" name="AP Review Decision"></exclusiveGateway>
-        <sequenceFlow id="flow12" sourceRef="finalReviewTask" targetRef="finalReviewDecision"></sequenceFlow>
-        <userTask id="finalApproved" name="Final Approved" activiti:assignee="${bpm_assignee.properties.userName}" activiti:formKey="wf:approvedTask">
-            <documentation>The document was reviewed and approved by James.</documentation>
-            <extensionElements>
-                <activiti:taskListener event="create" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
-                    <activiti:field name="script">
-                        <activiti:string>if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate
-                            if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;</activiti:string>
-                    </activiti:field>
-                </activiti:taskListener>
-                <activiti:taskListener event="complete" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
-                    <activiti:field name="script">
-                        <activiti:string>for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
-                            var payload = bpm_package.children[i];
-                            var dest = payload.parent.parent.childByNamePath('AP');
-                            payload.move(dest);
-                            }
-                        </activiti:string>
-                    </activiti:field>
-                </activiti:taskListener>
-            </extensionElements>
-        </userTask>
-        <sequenceFlow id="flow13" sourceRef="finalReviewDecision" targetRef="finalApproved">
-            <conditionExpression xsi:type="tFormalExpression"><![CDATA[${wf_reviewOutcome == 'Approve'}]]></conditionExpression>
-        </sequenceFlow>
-        <userTask id="finalRejected" name="Final Rejected" activiti:assignee="${initiator.properties.userName}" activiti:formKey="wf:rejectedTask">
-            <documentation>The document was reviewed and rejected by James.</documentation>
-            <extensionElements>
-                <activiti:taskListener event="create" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
-                    <activiti:field name="script">
-                        <activiti:string>if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate
-                            if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;</activiti:string>
-                    </activiti:field>
-                </activiti:taskListener>
-            </extensionElements>
-        </userTask>
-        <sequenceFlow id="flow14" sourceRef="finalReviewDecision" targetRef="finalRejected">
-            <conditionExpression xsi:type="tFormalExpression"><![CDATA[${wf_reviewOutcome == 'Rejected'}]]></conditionExpression>
-        </sequenceFlow>
+        <sequenceFlow id="flow11" sourceRef="apRejected" targetRef="endevent1"></sequenceFlow>
+
+        <!--
         <sequenceFlow id="flow16" sourceRef="finalRejected" targetRef="apReviewTask"></sequenceFlow>
+        -->
         <userTask id="payCustomer" name="Pay Customer" activiti:candidateGroups="GROUP_ZITOMEDIA_AP" activiti:formKey="zitomediawf:zitoMediaPayCustomerTask">
             <documentation>The invoice has been approved and invoice needs to send to customer.</documentation>
             <extensionElements>
                 <activiti:taskListener event="create" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
                     <activiti:field name="script">
-                        <activiti:string>if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate
+                        <activiti:string>task.description = "Pays customer for approved invoice ";
+                            if ( bpm_package.children.length &gt; 0 ) {
+                                task.description += bpm_package.children[0].properties['cm:name'];
+                            }
+                            if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate
                             if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;</activiti:string>
                     </activiti:field>
                 </activiti:taskListener>
@@ -205,7 +226,11 @@
             <extensionElements>
                 <activiti:taskListener event="create" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
                     <activiti:field name="script">
-                        <activiti:string>if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate
+                        <activiti:string>task.description = "Completes review process for invoice ";
+                            if ( bpm_package.children.length &gt; 0 ) {
+                                task.description += bpm_package.children[0].properties['cm:name'];
+                            }
+                            if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate
                             if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;</activiti:string>
                     </activiti:field>
                 </activiti:taskListener>
@@ -221,7 +246,6 @@
                 </activiti:taskListener>
             </extensionElements>
         </userTask>
-        <sequenceFlow id="flow18" sourceRef="finalApproved" targetRef="payCustomer"></sequenceFlow>
         <sequenceFlow id="flow15" sourceRef="payCustomer" targetRef="processCompleted"></sequenceFlow>
         <endEvent id="endevent1" name="End"></endEvent>
         <sequenceFlow id="flow17" sourceRef="processCompleted" targetRef="endevent1"></sequenceFlow>
@@ -252,7 +276,7 @@
             <bpmndi:BPMNShape bpmnElement="finalReviewDecision" id="BPMNShape_reviewDecision2">
                 <omgdc:Bounds height="40.0" width="40.0" x="990.0" y="-133.0"></omgdc:Bounds>
             </bpmndi:BPMNShape>
-            <bpmndi:BPMNShape bpmnElement="apReviewTask" id="BPMNShape_reviewTask1">
+            <bpmndi:BPMNShape bpmnElement="apProcessTask" id="BPMNShape_reviewTask1">
                 <omgdc:Bounds height="55.0" width="105.0" x="434.0" y="20.0"></omgdc:Bounds>
             </bpmndi:BPMNShape>
             <bpmndi:BPMNShape bpmnElement="apApproved" id="BPMNShape_approved1">

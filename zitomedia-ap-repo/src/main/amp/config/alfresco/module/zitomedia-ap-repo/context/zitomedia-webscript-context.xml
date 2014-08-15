@@ -2,5 +2,9 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
-
+    <!-- Lists the task instances, filtered by task owner and state. -->
+    <bean id="webscript.com.zitomedia.repository.workflow.task-instances.get"
+          class="com.zitomedia.repo.web.scripts.workflow.TaskInstancesGet"
+          parent="abstractWorkflowWebScript">
+    </bean>
 </beans>
