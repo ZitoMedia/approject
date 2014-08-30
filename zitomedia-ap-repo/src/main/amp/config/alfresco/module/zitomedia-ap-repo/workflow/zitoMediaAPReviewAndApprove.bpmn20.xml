@@ -2,8 +2,36 @@
 <definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://activiti.org/bpmn20">
     <process id="ZitomediaMultiLevelReview" name="Zitomedia Review And Approve Activiti Process" isExecutable="true">
         <startEvent id="start" activiti:formKey="wf:submitReviewTask"></startEvent>
-        <sequenceFlow id="flow1" sourceRef="start" targetRef="supervisorReviewTask"></sequenceFlow>
-        <userTask id="supervisorReviewTask" name="Supervisor Review Task" activiti:candidateGroups="GROUP_ZITOMEDIA_SUPERVISORS" activiti:formKey="zitomediawf:zitoMediaSupervisorReviewTask">
+        <sequenceFlow id="flow1" sourceRef="start" targetRef="supervisorReviewTask">
+            <extensionElements>
+                <activiti:executionListener event="start"
+                                            class="org.alfresco.repo.workflow.activiti.listener.ScriptExecutionListener">
+                    <!--
+                    <activiti:field name="runAs"><activiti:string>admin</activiti:string></activiti:field>
+                    -->
+                    <activiti:field name="script">
+                        <activiti:string>for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
+                                var payload =  bpm_package.children[i];
+                                payload.specializeType('zitomedia:invoice');
+                                if (!payload.hasAspect('zitomedia:ap')) {
+                                    payload.addAspect('zitomedia:ap');
+                                }
+                                payload.properties['zitomedia:status'] = 'Supervisor Assigned';
+                                payload.save();
+                                var parent = payload.parent.parent;
+                                if (parent != null &amp;&amp; parent.childByNamePath('Assigned') != null) {
+                                    var assignedFolder = parent.childByNamePath('Assigned').childByNamePath(bpm_assignee.properties.userName);
+                                    if (assignedFolder != null) {
+                                        payload.move(assignedFolder);
+                                    }
+                                }
+                            }
+                        </activiti:string>
+                    </activiti:field>
+                </activiti:executionListener>
+            </extensionElements>
+        </sequenceFlow>
+        <userTask id="supervisorReviewTask" name="Supervisor Review Task" activiti:assignee="${bpm_assignee.properties.userName}" activiti:formKey="zitomediawf:zitoMediaSupervisorReviewTask">
             <extensionElements>
                 <activiti:taskListener event="create" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
                     <activiti:field name="script">
@@ -12,18 +40,25 @@
                                 task.description += bpm_package.children[0].properties['cm:name'];
                             }
                             if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate
-                            if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;</activiti:string>
+                            if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;
+                        </activiti:string>
                     </activiti:field>
                 </activiti:taskListener>
                 <activiti:taskListener event="complete" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
                     <activiti:field name="script">
                         <activiti:string>var reviewOutcome = task.getVariable('wf_reviewOutcome');
                             execution.setVariable('wf_reviewOutcome', reviewOutcome);
-                            execution.setVariable('bpm_assignee', person);
                             for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
-                                var payload = bpm_package.children[i];
-                                var dest = reviewOutcome == 'Approve' ? payload.parent.parent.childByNamePath('AP') : payload.parent.parent.childByNamePath('Rejected');
-                                payload.move(dest);
+                                if (!bpm_package.children[i].hasAspect('zitomedia:ap')) {
+                                    bpm_package.children[i].addAspect('zitomedia:ap');
+                                    bpm_package.children[i].save();
+                                }
+                                if (reviewOutcome == 'Approve') {
+                                    bpm_package.children[i].properties['zitomedia:status'] = 'Supervisor Approved';
+                                } else {
+                                    bpm_package.children[i].properties['zitomedia:status'] = 'Supervisor Rejected';
+                                }
+                                bpm_package.children[i].save();
                             }
                         </activiti:string>
                     </activiti:field>
@@ -42,13 +77,25 @@
             <documentation>The invoice was reviewed and rejected by supervisor. Contact vendor for corrected invoice.</documentation>
             <extensionElements>
                 <activiti:taskListener event="create" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
+                    <activiti:field name="runAs"><activiti:string>admin</activiti:string></activiti:field>
                     <activiti:field name="script">
-                        <activiti:string>task.description = "Contact vendor for rejected invoice ";
+                        <activiti:string>task.description = "Contact vendor for supervisor rejected invoice ";
                             if ( bpm_package.children.length &gt; 0 ) {
                                 task.description += bpm_package.children[0].properties['cm:name'];
                             }
                             if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate
-                            if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;</activiti:string>
+                            if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;
+                            for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
+                                var payload = bpm_package.children[i];
+                                var parent = payload.parent.parent.parent;
+                                if (parent != null &amp;&amp; parent.childByNamePath('Rejected') != null) {
+                                    var supervisorRejectedFolder = parent.childByNamePath('Rejected').childByNamePath('Supervisor Rejected');
+                                    if (supervisorRejectedFolder != null) {
+                                        payload.move(supervisorRejectedFolder);
+                                    }
+                                }
+                            }
+                        </activiti:string>
                     </activiti:field>
                 </activiti:taskListener>
             </extensionElements>
@@ -65,11 +112,8 @@
                             if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate
                             if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;
                             for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
-                                if (!bpm_package.children[i].hasAspect('zitomedia:ap')) {
-                                    bpm_package.children[i].addAspect('zitomedia:ap');
-                                    bpm_package.children[i].save();
-                                }
-                                task.setVariableLocal('zitomediawf_vouchNumber', bpm_package.children[i].properties['zitomedia:voucherNumber']);
+                                task.setVariableLocal('zitomediawf_voucherNumber', bpm_package.children[i].properties['zitomedia:voucherNumber']);
+                                task.setVariableLocal('zitomediawf_customerCategory', bpm_package.children[i].properties['zitomedia:customerCategory']);
                             }
                         </activiti:string>
                     </activiti:field>
@@ -79,15 +123,21 @@
                         <activiti:string>var reviewOutcome = task.getVariable('wf_reviewOutcome');
                             execution.setVariable('wf_reviewOutcome', task.getVariable('wf_reviewOutcome'));
                             for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
-                                bpm_package.children[i].properties['zitomedia:voucherNumber'] = task.getVariable('zitomediawf_vouchNumber');
-                                bpm_package.children[i].save();
+                                var payload = bpm_package.children[i];
+                                payload.properties['zitomedia:voucherNumber'] = task.getVariable('zitomediawf_voucherNumber');
+                                payload.properties['zitomedia:customerCategory'] = task.getVariable('zitomediawf_customerCategory');
+                                payload.properties['zitomedia:status'] = 'AP Approved';
+                                payload.save();
+
+                                var parent = payload.parent.parent.parent;
+                                if (parent != null &amp;&amp; parent.childByNamePath('Processing') != null) {
+                                    var processingFolder = parent.childByNamePath('Processing').childByNamePath(task.getVariable('zitomediawf_customerCategory'));
+                                    if (processingFolder != null) {
+                                        payload.move(processingFolder);
+                                    }
+                                }
                             }
                             execution.setVariable('bpm_assignee', person);
-                            for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
-                                var payload = bpm_package.children[i];
-                                var dest = payload.parent.parent.childByNamePath('Final');
-                                payload.move(dest);
-                            }
                         </activiti:string>
                     </activiti:field>
                 </activiti:taskListener>
@@ -104,7 +154,12 @@
                                 task.description += bpm_package.children[0].properties['cm:name'];
                             }
                             if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate
-                            if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;</activiti:string>
+                            if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;
+                            for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
+                                task.setVariableLocal('zitomediawf_voucherNumber', bpm_package.children[i].properties['zitomedia:voucherNumber']);
+                                task.setVariableLocal('zitomediawf_customerCategory', bpm_package.children[i].properties['zitomedia:customerCategory']);
+                            }
+                        </activiti:string>
                     </activiti:field>
                 </activiti:taskListener>
                 <activiti:taskListener event="complete" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
@@ -114,8 +169,21 @@
                             execution.setVariable('bpm_assignee', person);
                             for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
                                 var payload = bpm_package.children[i];
-                                var dest = payload.parent.parent.childByNamePath('AP');
-                                payload.move(dest);
+                                if (reviewOutcome == 'Approve') {
+                                    payload.properties['zitomedia:status'] = 'Final Approved';
+                                    payload.save();
+                                } else {
+                                    payload.properties['zitomedia:status'] = 'Final Rejected';
+                                    payload.save();
+                                    var parent = payload.parent.parent.parent;
+                                    var customerCategory = payload.properties['zitomedia:customerCategory'];
+                                    if (parent != null &amp;&amp; parent.childByNamePath('Rejected') != null) {
+                                        var rejectedFolder = parent.childByNamePath('Rejected').childByNamePath(customerCategory);
+                                        if (rejectedFolder != null) {
+                                            payload.move(rejectedFolder);
+                                        }
+                                    }
+                                }
                             }
                         </activiti:string>
                     </activiti:field>
@@ -126,20 +194,6 @@
         <sequenceFlow id="flow13" sourceRef="finalReviewDecision" targetRef="payCustomer">
             <conditionExpression xsi:type="tFormalExpression"><![CDATA[${wf_reviewOutcome == 'Approve'}]]></conditionExpression>
         </sequenceFlow>
-        <!--
-        <userTask id="finalRejected" name="Final Rejected" activiti:assignee="${initiator.properties.userName}" activiti:formKey="wf:rejectedTask">
-            <documentation>The document was reviewed and rejected by James.</documentation>
-            <extensionElements>
-                <activiti:taskListener event="create" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
-                    <activiti:field name="script">
-                        <activiti:string>if (typeof bpm_workflowDescription != 'undefined') task.description = bpm_workflowDescription;
-                            if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate
-                            if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;</activiti:string>
-                    </activiti:field>
-                </activiti:taskListener>
-            </extensionElements>
-        </userTask>
-        -->
         <sequenceFlow id="flow14" sourceRef="finalReviewDecision" targetRef="apReviewTask">
             <conditionExpression xsi:type="tFormalExpression"><![CDATA[${wf_reviewOutcome == 'Reject'}]]></conditionExpression>
         </sequenceFlow>
@@ -154,11 +208,8 @@
                             if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate
                             if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;
                             for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
-                            if (!bpm_package.children[i].hasAspect('zitomedia:ap')) {
-                            bpm_package.children[i].addAspect('zitomedia:ap');
-                            bpm_package.children[i].save();
-                            }
-                            task.setVariableLocal('zitomediawf_vouchNumber', bpm_package.children[i].properties['zitomedia:voucherNumber']);
+                                task.setVariableLocal('zitomediawf_voucherNumber', bpm_package.children[i].properties['zitomedia:voucherNumber']);
+                                task.setVariableLocal('zitomediawf_customerCategory', bpm_package.children[i].properties['zitomedia:customerCategory']);
                             }
                         </activiti:string>
                     </activiti:field>
@@ -170,8 +221,18 @@
                             execution.setVariable('bpm_assignee', person);
                             for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
                                 var payload = bpm_package.children[i];
-                                var dest = reviewOutcome == 'Approve' ? payload.parent.parent.childByNamePath('Supervisor') : payload.parent.parent.childByNamePath('Rejected');
-                                payload.move(dest);
+                                if (reviewOutcome == 'Approve') {
+                                    payload.properties['zitomedia:status'] = 'AP Approved';
+                                    payload.save();
+                                    var parent = payload.parent.parent.parent;
+                                    var customerCategory = payload.properties['zitomedia:customerCategory'];
+                                    if (parent != null &amp;&amp; parent.childByNamePath('Incoming') != null) {
+                                        payload.move(parent.childByNamePath('Incoming'));
+                                    }
+                                } else {
+                                    payload.properties['zitomedia:status'] = 'AP Rejected';
+                                    payload.save();
+                                }
                             }
                         </activiti:string>
                     </activiti:field>
@@ -216,7 +277,29 @@
                                 task.description += bpm_package.children[0].properties['cm:name'];
                             }
                             if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate
-                            if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;</activiti:string>
+                            if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;
+                            for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
+                                task.setVariableLocal('zitomediawf_voucherNumber', bpm_package.children[i].properties['zitomedia:voucherNumber']);
+                                task.setVariableLocal('zitomediawf_customerCategory', bpm_package.children[i].properties['zitomedia:customerCategory']);
+                            }</activiti:string>
+                    </activiti:field>
+                </activiti:taskListener>
+                <activiti:taskListener event="complete" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
+                    <activiti:field name="script">
+                        <activiti:string>for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
+                                var payload = bpm_package.children[i];
+                                payload.properties['zitomedia:status'] = 'Customer Paid';
+                                payload.save();
+                                var parent = payload.parent.parent.parent;
+                                var customerCategory = payload.properties['zitomedia:customerCategory'];
+                                if (parent != null &amp;&amp; parent.childByNamePath('Processed') != null) {
+                                    var processedFolder = parent.childByNamePath('Processed').childByNamePath(customerCategory);
+                                    if (processedFolder != null) {
+                                        payload.move(processedFolder);
+                                    }
+                                }
+                            }
+                        </activiti:string>
                     </activiti:field>
                 </activiti:taskListener>
             </extensionElements>
@@ -231,17 +314,11 @@
                                 task.description += bpm_package.children[0].properties['cm:name'];
                             }
                             if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate
-                            if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;</activiti:string>
-                    </activiti:field>
-                </activiti:taskListener>
-                <activiti:taskListener event="complete" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
-                    <activiti:field name="script">
-                        <activiti:string>for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
-                            var payload = bpm_package.children[i];
-                            var dest = payload.parent.parent.childByNamePath('Completed');
-                            payload.move(dest);
-                            }
-                        </activiti:string>
+                            if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;
+                            for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
+                                task.setVariableLocal('zitomediawf_voucherNumber', bpm_package.children[i].properties['zitomedia:voucherNumber']);
+                                task.setVariableLocal('zitomediawf_customerCategory', bpm_package.children[i].properties['zitomedia:customerCategory']);
+                            }</activiti:string>
                     </activiti:field>
                 </activiti:taskListener>
             </extensionElements>

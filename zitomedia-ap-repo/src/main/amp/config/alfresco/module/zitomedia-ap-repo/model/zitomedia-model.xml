@@ -17,7 +17,70 @@
         <namespace uri="http://www.zitomedia.com/model/content/1.0" prefix="zitomedia"/>
     </namespaces>
 
+    <!-- CONSTRAINTS -->
+    <constraints>
+        <constraint name="zitomedia:customerCategoryList" type="LIST">
+            <parameter name="allowedValues">
+                <list>
+                    <value>001</value>
+                    <value>013</value>
+                    <value>023</value>
+                    <value>201</value>
+                    <value>301</value>
+                    <value>401</value>
+                    <value>411</value>
+                    <value>501</value>
+                    <value>601</value>
+                    <value>WJ</value>
+                    <value>BC</value>
+                    <value>CISCO</value>
+                    <value>DONATION</value>
+                    <value>FRANCH</value>
+                    <value>FUEL</value>
+                    <value>INSUR</value>
+                    <value>INT CIRC</value>
+                    <value>NCTC EQ</value>
+                    <value>PO</value>
+                    <value>POLE</value>
+                    <value>PROF</value>
+                    <value>PROG</value>
+                    <value>PROP TX</value>
+                    <value>TAX</value>
+                    <value>AP CKS</value>
+                    <value>NCTC PR</value>
+                    <value>REF CKS</value>
+                    <value>SCHED</value>
+                    <value>UTIL</value>
+                    <value>MISC</value>
+                </list>
+            </parameter>
+        </constraint>
+        <constraint name="zitomedia:statusList" type="LIST">
+            <parameter name="allowedValues">
+                <list>
+                    <value>Supervisor Assigned</value>
+                    <value>Supervisor Approved</value>
+                    <value>Supervisor Rejected</value>
+                    <value>AP Assigned</value>
+                    <value>AP Approved</value>
+                    <value>AP Rejected</value>
+                    <value>Final Assigned</value>
+                    <value>Final Approved</value>
+                    <value>Final Rejected</value>
+                    <value>Customer Paid</value>
+                </list>
+            </parameter>
+        </constraint>
+    </constraints>
+
     <types>
+        <type name="zitomedia:invoice">
+            <title>ZitoMedia Invoice</title>
+            <parent>cm:content</parent>
+            <mandatory-aspects>
+                <aspect>zitomedia:ap</aspect>
+            </mandatory-aspects>
+        </type>
     </types>
 
     <aspects>
@@ -27,6 +90,20 @@
                 <property name="zitomedia:voucherNumber">
                     <title>Voucher Number</title>
                     <type>d:text</type>
+                </property>
+                <property name="zitomedia:customerCategory">
+                    <title>Customer Category</title>
+                    <type>d:text</type>
+                    <constraints>
+                        <constraint ref="zitomedia:customerCategoryList"/>
+                    </constraints>
+                </property>
+                <property name="zitomedia:status">
+                    <title>Status</title>
+                    <type>d:text</type>
+                    <constraints>
+                        <constraint ref="zitomedia:statusList"/>
+                    </constraints>
                 </property>
             </properties>
         </aspect>

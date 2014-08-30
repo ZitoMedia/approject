@@ -12,6 +12,46 @@
         <namespace uri="http://www.zitomedia.com/model/workflow/1.0" prefix="zitomediawf"/>
     </namespaces>
 
+    <!-- CONSTRAINTS -->
+    <constraints>
+        <constraint name="zitomediawf:customerCategoryList" type="LIST">
+            <parameter name="allowedValues">
+                <list>
+                    <value>001</value>
+                    <value>013</value>
+                    <value>023</value>
+                    <value>201</value>
+                    <value>301</value>
+                    <value>401</value>
+                    <value>411</value>
+                    <value>501</value>
+                    <value>601</value>
+                    <value>WJ</value>
+                    <value>BC</value>
+                    <value>CISCO</value>
+                    <value>DONATION</value>
+                    <value>FRANCH</value>
+                    <value>FUEL</value>
+                    <value>INSUR</value>
+                    <value>INT CIRC</value>
+                    <value>NCTC EQ</value>
+                    <value>PO</value>
+                    <value>POLE</value>
+                    <value>PROF</value>
+                    <value>PROG</value>
+                    <value>PROP TX</value>
+                    <value>TAX</value>
+                    <value>AP CKS</value>
+                    <value>NCTC PR</value>
+                    <value>REF CKS</value>
+                    <value>SCHED</value>
+                    <value>UTIL</value>
+                    <value>MISC</value>
+                </list>
+            </parameter>
+        </constraint>
+    </constraints>
+
     <types>
         <type name="zitomediawf:zitoMediaSupervisorReviewTask">
             <parent>wf:activitiReviewTask</parent>
@@ -21,26 +61,52 @@
         </type>
         <type name="zitomediawf:zitoMediaAPProcessTask">
             <parent>bpm:workflowTask</parent>
-            <properties>
-                <property name="zitomediawf:vouchNumber">
-                    <type>d:text</type>
-                </property>
-            </properties>
+            <mandatory-aspects>
+                <aspect>zitomediawf:ap</aspect>
+            </mandatory-aspects>
         </type>
         <type name="zitomediawf:zitoMediaFinalReviewTask">
             <parent>wf:activitiReviewTask</parent>
+            <mandatory-aspects>
+                <aspect>zitomediawf:ap</aspect>
+            </mandatory-aspects>
         </type>
         <type name="zitomediawf:zitoMediaPayCustomerTask">
             <parent>bpm:workflowTask</parent>
+            <mandatory-aspects>
+                <aspect>zitomediawf:ap</aspect>
+            </mandatory-aspects>
         </type>
         <type name="zitomediawf:zitoMediaCompletedTask">
             <parent>wf:approvedTask</parent>
+            <mandatory-aspects>
+                <aspect>zitomediawf:ap</aspect>
+            </mandatory-aspects>
         </type>
         <type name="zitomediawf:zitoMediaAPRejectedTask">
             <parent>wf:rejectedTask</parent>
+            <mandatory-aspects>
+                <aspect>zitomediawf:ap</aspect>
+            </mandatory-aspects>
         </type>
         <type name="zitomediawf:zitoMediaSupervisorRejectedTask">
             <parent>wf:rejectedTask</parent>
         </type>
     </types>
+
+    <aspects>
+        <aspect name="zitomediawf:ap">
+            <properties>
+                <property name="zitomediawf:voucherNumber">
+                    <type>d:text</type>
+                </property>
+                <property name="zitomediawf:customerCategory">
+                    <type>d:text</type>
+                    <constraints>
+                        <constraint ref="zitomediawf:customerCategoryList"/>
+                    </constraints>
+                </property>
+            </properties>
+        </aspect>
+    </aspects>
 </model>

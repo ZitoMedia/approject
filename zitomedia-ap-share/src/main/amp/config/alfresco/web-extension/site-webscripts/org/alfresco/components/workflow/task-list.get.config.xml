@@ -1,0 +1,60 @@
+<config>
+    <max-items>50</max-items>
+    <filters-parameters>
+        <!--
+           Turns the filters form the filter's config files into url parameters by matching the filter id and data against
+           the filter patterns below. A wildcard ("*") matches any value as long as it exists and isn't empty.
+           The parameters will later be added to the end of the base repo webscript url used to retrieve the values.
+
+           Note that it is possible to create dynamic values by using the following keys inside "{}":
+            * {id}   - resolves to the filter id value
+            * {data} - resolveds to the filter data value
+            * {0dt}  - resolves to a iso08601 datetime representation of the current date and time
+            * {0d}   -  resolves to a iso8601 date representation of the current day
+            * {-7d}  -  resolves to a iso8601 date representation of the current day rolled the given number of days back
+            * {+7d}  -  resolves to a iso8601 date representation of the current day rolled the given number of days forward
+        -->
+        <filter id="workflows" data="active" parameters=""/>
+        <filter id="workflows" data="completed" parameters="pooledTasks=false&amp;state=COMPLETED"/>
+
+        <filter id="customer" data="001" parameters="zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=001"/>
+        <filter id="customer" data="013" parameters="zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=013"/>
+        <filter id="customer" data="023" parameters="zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=023"/>
+        <filter id="customer" data="201" parameters="zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=201"/>
+        <filter id="customer" data="301" parameters="zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=301"/>
+        <filter id="customer" data="401" parameters="zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=401"/>
+        <filter id="customer" data="411" parameters="zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=411"/>
+        <filter id="customer" data="501" parameters="zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=501"/>
+        <filter id="customer" data="601" parameters="zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=601"/>
+        <filter id="customer" data="WJ" parameters="zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=WJ"/>
+        <filter id="customer" data="BC" parameters="zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=BC"/>
+        <filter id="customer" data="CISCO" parameters="zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=CISCO"/>
+        <filter id="customer" data="DONATION" parameters="zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=DONATION"/>
+        <filter id="customer" data="FRANCH" parameters="zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=FRANCH"/>
+        <filter id="customer" data="FUEL" parameters="zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=FUEL"/>
+        <filter id="customer" data="INSUR" parameters="zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=INSUR"/>
+        <filter id="customer" data="INTCIRC" parameters="zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=INT CIRC"/>
+        <filter id="customer" data="NCTCEQ" parameters="zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=NCTC EQ"/>
+        <filter id="customer" data="PO" parameters="zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=PO"/>
+        <filter id="customer" data="POLE" parameters="zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=POLE"/>
+        <filter id="customer" data="PROF" parameters="zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=PROF"/>
+        <filter id="customer" data="PROG" parameters="zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=PROG"/>
+        <filter id="customer" data="PROPTX" parameters="zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=PROP TX"/>
+        <filter id="customer" data="TAX" parameters="zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=TAX"/>
+        <filter id="customer" data="APCKS" parameters="zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=AP CKS"/>
+        <filter id="customer" data="NCTCPR" parameters="zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=NCTC PR"/>
+        <filter id="customer" data="REFCKS" parameters="zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=REF CKS"/>
+        <filter id="customer" data="SCHED" parameters="zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=SCHED"/>
+        <filter id="customer" data="UTIL" parameters="zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=UTIL"/>
+        <filter id="customer" data="MISC" parameters="zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=MISC"/>
+
+        <filter id="due" data="today" parameters="dueAfter={-1d}&amp;dueBefore={0d}"/>
+        <filter id="due" data="tomorrow" parameters="dueAfter={0d}&amp;dueBefore={1d}"/>
+        <filter id="due" data="next7Days" parameters="dueAfter={0d}&amp;dueBefore={8d}"/>
+        <filter id="due" data="overdue" parameters="dueBefore={-1d}"/>
+        <filter id="due" data="noDate" parameters="dueBefore="/>
+        <filter id="priority" data="*" parameters="priority={data}"/>
+        <filter id="assignee" data="me" parameters="pooledTasks=false"/>
+        <filter id="assignee" data="unassigned" parameters="pooledTasks=true"/>
+    </filters-parameters>
+</config>

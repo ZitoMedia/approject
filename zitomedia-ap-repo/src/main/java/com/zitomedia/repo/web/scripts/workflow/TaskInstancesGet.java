@@ -12,6 +12,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
+import com.zitomedia.repo.model.ZitoMediaWorkflowModel;
 import org.alfresco.repo.web.scripts.workflow.AbstractWorkflowWebscript;
 import org.alfresco.repo.web.scripts.workflow.WorkflowModelBuilder;
 import org.alfresco.repo.workflow.WorkflowModel;
@@ -42,6 +43,8 @@ public class TaskInstancesGet extends AbstractWorkflowWebscript {
     public static final String PARAM_PROPERTIES = "properties";
     public static final String PARAM_POOLED_TASKS = "pooledTasks";
     public static final String VAR_WORKFLOW_INSTANCE_ID = "workflow_instance_id";
+
+    public static final String PARAM_CUSTOMER_CATEGORY = "customerCategory";
 
     private WorkflowTaskDueAscComparator taskComparator = new WorkflowTaskDueAscComparator();
 
@@ -83,6 +86,11 @@ public class TaskInstancesGet extends AbstractWorkflowWebscript {
         String taskName = req.getParameter(PARAM_NAME);
         if (taskName != null && !taskName.equals("")) {
             filters.put(PARAM_NAME, taskName);
+        }
+
+        String customerCategory = req.getParameter(PARAM_CUSTOMER_CATEGORY);
+        if (customerCategory != null && !customerCategory.equals("")) {
+            filters.put(PARAM_CUSTOMER_CATEGORY, customerCategory);
         }
 
         List<WorkflowTask> allTasks;
@@ -280,6 +288,11 @@ public class TaskInstancesGet extends AbstractWorkflowWebscript {
                     }
                 } else if (key.equals(PARAM_NAME)) {
                     if (!filterValue.equals(task.getName())) {
+                        result = false;
+                        break;
+                    }
+                } else if (key.equals(PARAM_CUSTOMER_CATEGORY)) {
+                    if (!filterValue.equals(task.getProperties().get(ZitoMediaWorkflowModel.PROP_CUSTOMER_CATEGORY).toString())) {
                         result = false;
                         break;
                     }

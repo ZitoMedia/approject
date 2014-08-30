@@ -1,0 +1,34 @@
+<config>
+    <filters>
+        <filter id="customer" data="001" label="link.customer001"/>
+        <filter id="customer" data="013" label="link.customer013"/>
+        <filter id="customer" data="023" label="link.customer023"/>
+        <filter id="customer" data="201" label="link.customer201"/>
+        <filter id="customer" data="301" label="link.customer301"/>
+        <filter id="customer" data="401" label="link.customer401"/>
+        <filter id="customer" data="411" label="link.customer411"/>
+        <filter id="customer" data="501" label="link.customer501"/>
+        <filter id="customer" data="601" label="link.customer601"/>
+        <filter id="customer" data="WJ" label="link.customerWJ"/>
+        <filter id="customer" data="BC" label="link.customerBC"/>
+        <filter id="customer" data="CISCO" label="link.customerCISCO"/>
+        <filter id="customer" data="DONATION" label="link.customerDONATION"/>
+        <filter id="customer" data="FRANCH" label="link.customerFRANCH"/>
+        <filter id="customer" data="FUEL" label="link.customerFUEL"/>
+        <filter id="customer" data="INSUR" label="link.customerINSUR"/>
+        <filter id="customer" data="INTCIRC" label="link.customerINTCIRC"/>
+        <filter id="customer" data="NCTCEQ" label="link.customerNCTCEQ"/>
+        <filter id="customer" data="PO" label="link.customerPO"/>
+        <filter id="customer" data="POLE" label="link.customerPOLE"/>
+        <filter id="customer" data="PROF" label="link.customerPROF"/>
+        <filter id="customer" data="PROG" label="link.customerPROG"/>
+        <filter id="customer" data="PROPTX" label="link.customerPROPTX"/>
+        <filter id="customer" data="TAX" label="link.customerTAX"/>
+        <filter id="customer" data="APCKS" label="link.customerAPCKS"/>
+        <filter id="customer" data="NCTCPR" label="link.customerNCTCPR"/>
+        <filter id="customer" data="REFCKS" label="link.customerREFCKS"/>
+        <filter id="customer" data="SCHED" label="link.customerSCHED"/>
+        <filter id="customer" data="UTIL" label="link.customerUTIL"/>
+        <filter id="customer" data="MISC" label="link.customerMISC"/>
+    </filters>
+</config>

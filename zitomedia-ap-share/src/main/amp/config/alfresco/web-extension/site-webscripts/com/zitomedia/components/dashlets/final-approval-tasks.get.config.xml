@@ -1,22 +1,57 @@
 <config>
-   <max-items>50</max-items>
-   <filter-menu>
-      <!--
-         The value of the "parameters" attribute will be added to the end of the task-instances webscript url
+    <max-items>50</max-items>
+    <filter-menu>
+        <!--
+           The value of the "parameters" attribute will be added to the end of the task-instances webscript url
 
-         Note that it is possible to create dynamic values by using the following keys inside "{}":
-          * {0dt} - resolves to a iso08601 datetime representation of the current date and time
-          * {0d} - resolves to a iso8601 date representation of the current day
-          * {-7d} - resolves to a iso8601 date representation of the current day rolled the given number of days back
-          * {+7d} - resolves to a iso8601 date representation of the current day rolled the given number of days forward
-      -->
-      <filter type="finalApprovalTasks"    parameters="name=zitomediawf:zitoMediaFinalReviewTask"/>
-      <filter type="activeTasks"           parameters=""/>
-      <filter type="completedTasks"        parameters="pooledTasks=false&amp;state=COMPLETED"/>
-      <filter type="highPriorityTasks"     parameters="priority=1"/>
-      <filter type="tasksDueToday"         parameters="dueAfter={-1d}&amp;dueBefore={0d}"/>
-      <filter type="tasksAssignedToMe"     parameters="pooledTasks=false"/>
-      <filter type="unassignedPooledTasks" parameters="pooledTasks=true" />
-      <filter type="overdueTasks"          parameters="dueBefore={-1d}"/>
-   </filter-menu>
+           Note that it is possible to create dynamic values by using the following keys inside "{}":
+            * {0dt} - resolves to a iso08601 datetime representation of the current date and time
+            * {0d} - resolves to a iso8601 date representation of the current day
+            * {-7d} - resolves to a iso8601 date representation of the current day rolled the given number of days back
+            * {+7d} - resolves to a iso8601 date representation of the current day rolled the given number of days forward
+        -->
+        <filter type="allCustomers" parameters="name=zitomediawf:zitoMediaFinalReviewTask"/>
+        <filter type="customer001" parameters="name=zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=001"/>
+        <filter type="customer013" parameters="name=zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=013"/>
+        <filter type="customer023" parameters="name=zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=023"/>
+        <filter type="customer201" parameters="name=zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=201"/>
+        <filter type="customer301" parameters="name=zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=301"/>
+        <filter type="customer401" parameters="name=zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=401"/>
+        <filter type="customer411" parameters="name=zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=411"/>
+        <filter type="customer501" parameters="name=zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=501"/>
+        <filter type="customer601" parameters="name=zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=601"/>
+        <filter type="customerWJ" parameters="name=zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=WJ"/>
+        <filter type="customerBC" parameters="name=zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=BC"/>
+        <filter type="customerCISCO" parameters="name=zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=CISCO"/>
+        <filter type="customerDONATION" parameters="name=zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=DONATION"/>
+        <filter type="customerFRANCH" parameters="name=zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=FRANCH"/>
+        <filter type="customerFUEL" parameters="name=zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=FUEL"/>
+        <filter type="customerINSUR" parameters="name=zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=INSUR"/>
+        <filter type="customerINTCIRC" parameters="name=zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=INT CIRC"/>
+        <filter type="customerNCTCEQ" parameters="name=zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=NCTC EQ"/>
+        <filter type="customerPO" parameters="name=zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=PO"/>
+        <filter type="customerPOLE" parameters="name=zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=POLE"/>
+        <filter type="customerPROF" parameters="name=zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=PROF"/>
+        <filter type="customerPROG" parameters="name=zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=PROG"/>
+        <filter type="customerPROPTX" parameters="name=zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=PROP TX"/>
+        <filter type="customerTAX" parameters="name=zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=TAX"/>
+        <filter type="customerAPCKS" parameters="name=zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=AP CKS"/>
+        <filter type="customerNCTCPR" parameters="name=zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=NCTC PR"/>
+        <filter type="customerREFCKS" parameters="name=zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=REF CKS"/>
+        <filter type="customerSCHED" parameters="name=zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=SCHED"/>
+        <filter type="customerUTIL" parameters="name=zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=UTIL"/>
+        <filter type="customerMISC" parameters="name=zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=MISC"/>
+        <filter type="activeTasks" parameters=""/>
+        <filter type="completedTasks" parameters="pooledTasks=false&amp;state=COMPLETED"/>
+        <!--
+        <filter type="finalApprovalTasks"    parameters="name=zitomediawf:zitoMediaFinalReviewTask"/>
+        <filter type="activeTasks"           parameters=""/>
+        <filter type="completedTasks"        parameters="pooledTasks=false&amp;state=COMPLETED"/>
+        <filter type="highPriorityTasks"     parameters="priority=1"/>
+        <filter type="tasksDueToday"         parameters="dueAfter={-1d}&amp;dueBefore={0d}"/>
+        <filter type="tasksAssignedToMe"     parameters="pooledTasks=false"/>
+        <filter type="unassignedPooledTasks" parameters="pooledTasks=true" />
+        <filter type="overdueTasks"          parameters="dueBefore={-1d}"/>
+        -->
+    </filter-menu>
 </config>

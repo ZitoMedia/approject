@@ -19,6 +19,10 @@
                     <prop key="path">/${spaces.company_home.childname}/${spaces.dictionary.childname}/${spaces.scripts.childname}</prop>
                     <prop key="location">alfresco/module/zitomedia-ap-repo/bootstrap/start-zitomedia-ap-review-approval-workflow.xml</prop>
                 </props>
+                <props>
+                    <prop key="path">/${spaces.company_home.childname}/${spaces.dictionary.childname}/${spaces.templates.childname}</prop>
+                    <prop key="location">alfresco/module/zitomedia-ap-repo/bootstrap/zitomedia-ap-invoices-template.xml</prop>
+                </props>
             </list>
         </property>
     </bean>

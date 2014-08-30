@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view:view xmlns:view="http://www.alfresco.org/view/repository/1.0"
+           xmlns:cm="http://www.alfresco.org/model/content/1.0"
+           xmlns:app="http://www.alfresco.org/model/application/1.0">
+
+    <cm:folder view:childName="cm:AP Invoices">
+        <app:uifacets></app:uifacets>
+        <cm:name>AP Invoices</cm:name>
+        <app:icon>space-icon-default</app:icon>
+        <cm:title>AP Invoices</cm:title>
+        <cm:description>ZitoMedia AP Invoices Folder Template</cm:description>
+        <cm:contains>
+            <cm:folder view:childName="cm:001">
+                <app:uifacets/>
+                <cm:name>001</cm:name>
+                <app:icon>space-icon-default</app:icon>
+                <cm:title>001</cm:title>
+                <cm:description>Company #'s 001-022 (minus 013)</cm:description>
+            </cm:folder>
+            <cm:folder view:childName="cm:013">
+                <app:uifacets/>
+                <cm:name>013</cm:name>
+                <app:icon>space-icon-default</app:icon>
+                <cm:title>013</cm:title>
+                <cm:description>Treasure Lake LP</cm:description>
+            </cm:folder>
+            <cm:folder view:childName="cm:023">
+                <app:uifacets/>
+                <cm:name>023</cm:name>
+                <app:icon>space-icon-default</app:icon>
+                <cm:title>023</cm:title>
+                <cm:description>ZMC II</cm:description>
+            </cm:folder>
+            <cm:folder view:childName="cm:201">
+                <app:uifacets/>
+                <cm:name>201</cm:name>
+                <app:icon>space-icon-default</app:icon>
+                <cm:title>201</cm:title>
+                <cm:description>Ducom</cm:description>
+            </cm:folder>
+            <cm:folder view:childName="cm:301">
+                <app:uifacets/>
+                <cm:name>301</cm:name>
+                <app:icon>space-icon-default</app:icon>
+                <cm:title>301</cm:title>
+                <cm:description>St Marys</cm:description>
+            </cm:folder>
+            <cm:folder view:childName="cm:401">
+                <app:uifacets/>
+                <cm:name>401</cm:name>
+                <app:icon>space-icon-default</app:icon>
+                <cm:title>401</cm:title>
+                <cm:description>Zito NCTNWVPANOH</cm:description>
+            </cm:folder>
+            <cm:folder view:childName="cm:411">
+                <app:uifacets/>
+                <cm:name>411</cm:name>
+                <app:icon>space-icon-default</app:icon>
+                <cm:title>411</cm:title>
+                <cm:description>Zito VASOH</cm:description>
+            </cm:folder>
+            <cm:folder view:childName="cm:501">
+                <app:uifacets/>
+                <cm:name>501</cm:name>
+                <app:icon>space-icon-default</app:icon>
+                <cm:title>501</cm:title>
+                <cm:description>Zito Midwest</cm:description>
+            </cm:folder>
+            <cm:folder view:childName="cm:601">
+                <app:uifacets/>
+                <cm:name>601</cm:name>
+                <app:icon>space-icon-default</app:icon>
+                <cm:title>601</cm:title>
+                <cm:description>Zito Alabama</cm:description>
+            </cm:folder>
+            <cm:folder view:childName="cm:WJ">
+                <app:uifacets/>
+                <cm:name>WJ</cm:name>
+                <app:icon>space-icon-default</app:icon>
+                <cm:title>WJ</cm:title>
+                <cm:description>611-661 - Windjammer</cm:description>
+            </cm:folder>
+            <cm:folder view:childName="cm:BC">
+                <app:uifacets/>
+                <cm:name>BC</cm:name>
+                <app:icon>space-icon-default</app:icon>
+                <cm:title>BC</cm:title>
+                <cm:description>BC Zito</cm:description>
+            </cm:folder>
+            <cm:folder view:childName="cm:CISCO">
+                <app:uifacets/>
+                <cm:name>CISCO</cm:name>
+                <app:icon>space-icon-default</app:icon>
+                <cm:title>CISCO</cm:title>
+                <cm:description>Cisco</cm:description>
+            </cm:folder>
+            <cm:folder view:childName="cm:DONATION">
+                <app:uifacets/>
+                <cm:name>DONATION</cm:name>
+                <app:icon>space-icon-default</app:icon>
+                <cm:title>DONATION</cm:title>
+                <cm:description>Donations/Contributions</cm:description>
+            </cm:folder>
+            <cm:folder view:childName="cm:FRANCH">
+                <app:uifacets/>
+                <cm:name>FRANCH</cm:name>
+                <app:icon>space-icon-default</app:icon>
+                <cm:title>FRANCH</cm:title>
+                <cm:description>Franchise Fees</cm:description>
+            </cm:folder>
+            <cm:folder view:childName="cm:FUEL">
+                <app:uifacets/>
+                <cm:name>FUEL</cm:name>
+                <app:icon>space-icon-default</app:icon>
+                <cm:title>FUEL</cm:title>
+                <cm:description>Fuel</cm:description>
+            </cm:folder>
+            <cm:folder view:childName="cm:INSUR">
+                <app:uifacets/>
+                <cm:name>INSUR</cm:name>
+                <app:icon>space-icon-default</app:icon>
+                <cm:title>INSUR</cm:title>
+                <cm:description>Insurance</cm:description>
+            </cm:folder>
+            <cm:folder view:childName="cm:INT CIRC">
+                <app:uifacets/>
+                <cm:name>INT CIRC</cm:name>
+                <app:icon>space-icon-default</app:icon>
+                <cm:title>INT CIRC</cm:title>
+                <cm:description>Internet and Circuits</cm:description>
+            </cm:folder>
+            <cm:folder view:childName="cm:NCTC EQ">
+                <app:uifacets/>
+                <cm:name>NCTC EQ</cm:name>
+                <app:icon>space-icon-default</app:icon>
+                <cm:title>NCTC EQ</cm:title>
+                <cm:description>NCTC Draft - Equipment</cm:description>
+            </cm:folder>
+            <cm:folder view:childName="cm:PO">
+                <app:uifacets/>
+                <cm:name>PO</cm:name>
+                <app:icon>space-icon-default</app:icon>
+                <cm:title>PO</cm:title>
+                <cm:description>Purchase Order</cm:description>
+            </cm:folder>
+            <cm:folder view:childName="cm:POLE">
+                <app:uifacets/>
+                <cm:name>POLE</cm:name>
+                <app:icon>space-icon-default</app:icon>
+                <cm:title>POLE</cm:title>
+                <cm:description>Pole Rent</cm:description>
+            </cm:folder>
+            <cm:folder view:childName="cm:PROF">
+                <app:uifacets/>
+                <cm:name>PROF</cm:name>
+                <app:icon>space-icon-default</app:icon>
+                <cm:title>PROF</cm:title>
+                <cm:description>Professionals</cm:description>
+            </cm:folder>
+            <cm:folder view:childName="cm:PROG">
+                <app:uifacets/>
+                <cm:name>PROG</cm:name>
+                <app:icon>space-icon-default</app:icon>
+                <cm:title>PROG</cm:title>
+                <cm:description>PProgramming - Non NCTC</cm:description>
+            </cm:folder>
+            <cm:folder view:childName="cm:PROP TX">
+                <app:uifacets/>
+                <cm:name>PROP TX</cm:name>
+                <app:icon>space-icon-default</app:icon>
+                <cm:title>PROP TX</cm:title>
+                <cm:description>Property Tax</cm:description>
+            </cm:folder>
+            <cm:folder view:childName="cm:TAX">
+                <app:uifacets/>
+                <cm:name>TAX</cm:name>
+                <app:icon>space-icon-default</app:icon>
+                <cm:title>TAX</cm:title>
+                <cm:description>Sales/Use Tax</cm:description>
+            </cm:folder>
+            <cm:folder view:childName="cm:AP CKS">
+                <app:uifacets/>
+                <cm:name>AP CKS</cm:name>
+                <app:icon>space-icon-default</app:icon>
+                <cm:title>AP CKS</cm:title>
+                <cm:description>AP Weekly Check Register</cm:description>
+            </cm:folder>
+            <cm:folder view:childName="cm:NCTC PR">
+                <app:uifacets/>
+                <cm:name>NCTC PR</cm:name>
+                <app:icon>space-icon-default</app:icon>
+                <cm:title>NCTC PR</cm:title>
+                <cm:description>NCTC Draft - Programming</cm:description>
+            </cm:folder>
+            <cm:folder view:childName="cm:REF CKS">
+                <app:uifacets/>
+                <cm:name>REF CKS</cm:name>
+                <app:icon>space-icon-default</app:icon>
+                <cm:title>REF CKS</cm:title>
+                <cm:description>Refund Checks</cm:description>
+            </cm:folder>
+            <cm:folder view:childName="cm:SCHED">
+                <app:uifacets/>
+                <cm:name>SCHED</cm:name>
+                <app:icon>space-icon-default</app:icon>
+                <cm:title>SCHED</cm:title>
+                <cm:description>Scheduled Payments - Bank Payments, Monthly and Annual Rents, Billing Postage, etc
+                </cm:description>
+            </cm:folder>
+            <cm:folder view:childName="cm:UTIL">
+                <app:uifacets/>
+                <cm:name>UTIL</cm:name>
+                <app:icon>space-icon-default</app:icon>
+                <cm:title>UTIL</cm:title>
+                <cm:description>Utilities</cm:description>
+            </cm:folder>
+            <cm:folder view:childName="cm:MISC">
+                <app:uifacets/>
+                <cm:name>MISC</cm:name>
+                <app:icon>space-icon-default</app:icon>
+                <cm:title>MISC</cm:title>
+                <cm:description>Miscellaneous</cm:description>
+            </cm:folder>
+            <cm:folder view:childName="cm:OTHERS">
+                <app:uifacets/>
+                <cm:name>OTHERS</cm:name>
+                <app:icon>space-icon-default</app:icon>
+                <cm:title>OTHERS</cm:title>
+                <cm:description>Others</cm:description>
+            </cm:folder>
+        </cm:contains>
+    </cm:folder>
+</view:view>

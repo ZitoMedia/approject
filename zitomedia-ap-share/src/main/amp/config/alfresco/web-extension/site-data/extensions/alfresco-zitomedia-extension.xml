@@ -1,0 +1,14 @@
+<extension>
+    <modules>
+		<module>
+			<id>Alfresco :: Task List</id>
+			<auto-deploy>true</auto-deploy>
+			<customizations>
+				<customization>
+					<targetPackageRoot>org.alfresco.components.workflow</targetPackageRoot>
+					<sourcePackageRoot>com.zitomedia.components.workflow</sourcePackageRoot>
+				</customization>
+			</customizations>
+		</module>
+    </modules>
+</extension>
