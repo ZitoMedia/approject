@@ -21,6 +21,7 @@ import org.alfresco.service.cmr.workflow.WorkflowTaskQuery;
 import org.alfresco.service.cmr.workflow.WorkflowTaskQuery.OrderBy;
 import org.alfresco.service.cmr.workflow.WorkflowTaskState;
 import org.alfresco.util.ModelUtil;
+import org.apache.log4j.Logger;
 import org.springframework.extensions.webscripts.Cache;
 import org.springframework.extensions.webscripts.Status;
 import org.springframework.extensions.webscripts.WebScriptException;
@@ -45,6 +46,13 @@ public class TaskInstancesGet extends AbstractWorkflowWebscript {
     public static final String VAR_WORKFLOW_INSTANCE_ID = "workflow_instance_id";
 
     public static final String PARAM_CUSTOMER_CATEGORY = "customerCategory";
+    public static final String PARAM_WF_NAME = "wfName";
+    public static final String PARAM_CUSTOM_EXCLUDE = "customExclude";
+
+    public static final String PARAM_SORT_BY = "sortBy";
+    public static final String PARAM_DIRECTION = "direction";
+
+    private static final Logger logger = Logger.getLogger(TaskInstancesGet.class);
 
     private WorkflowTaskDueAscComparator taskComparator = new WorkflowTaskDueAscComparator();
 
@@ -93,6 +101,16 @@ public class TaskInstancesGet extends AbstractWorkflowWebscript {
             filters.put(PARAM_CUSTOMER_CATEGORY, customerCategory);
         }
 
+        String wfName = req.getParameter(PARAM_WF_NAME);
+        if (wfName != null && !wfName.equals("")) {
+            filters.put(PARAM_WF_NAME, wfName);
+        }
+
+        String customExcludeParam = req.getParameter(PARAM_CUSTOM_EXCLUDE);
+        if (customExcludeParam != null && customExcludeParam.length() > 0) {
+            filters.put(PARAM_CUSTOM_EXCLUDE, new ExcludeFilter(customExcludeParam));
+        }
+
         List<WorkflowTask> allTasks;
 
         if (workflowInstanceId != null) {
@@ -136,7 +154,64 @@ public class TaskInstancesGet extends AbstractWorkflowWebscript {
                 }
 
                 // sort tasks by due date
-                Collections.sort(allTasks, taskComparator);
+                DirectionType directionType = DirectionType.fromString(req.getParameter(PARAM_DIRECTION));
+                SortType sortBy = SortType.fromString(req.getParameter(PARAM_SORT_BY));
+
+                switch (sortBy) {
+                    case DUE:
+                        switch(directionType) {
+                            case DES:
+                                Collections.sort(allTasks, new WorkflowTaskDueDesComparator());
+                                break;
+                            case ASC:
+                                Collections.sort(allTasks, new WorkflowTaskDueAscComparator());
+                                break;
+                            default:
+                                Collections.sort(allTasks, new WorkflowTaskDueDesComparator());
+                                break;
+                        }
+                        break;
+                    case PRIORITY:
+                        switch(directionType) {
+                            case DES:
+                                Collections.sort(allTasks, new WorkflowTaskPriorityDesComparator());
+                                break;
+                            case ASC:
+                                Collections.sort(allTasks, new WorkflowTaskPriorityAscComparator());
+                                break;
+                            default:
+                                Collections.sort(allTasks, new WorkflowTaskPriorityDesComparator());
+                                break;
+                        }
+                        break;
+                    case NAME:
+                        switch(directionType) {
+                            case DES:
+                                Collections.sort(allTasks, new WorkflowTaskNameDesComparator());
+                                break;
+                            case ASC:
+                                Collections.sort(allTasks, new WorkflowTaskNameAscComparator());
+                                break;
+                            default:
+                                Collections.sort(allTasks, new WorkflowTaskNameDesComparator());
+                                break;
+                        }
+                        break;
+                    default:
+                        switch(directionType) {
+                            case DES:
+                                Collections.sort(allTasks, new WorkflowTaskDueDesComparator());
+                                break;
+                            case ASC:
+                                Collections.sort(allTasks, new WorkflowTaskDueAscComparator());
+                                break;
+                            default:
+                                Collections.sort(allTasks, new WorkflowTaskDueDesComparator());
+                                break;
+                        }
+                        break;
+                }
+                //Collections.sort(allTasks, taskComparator);
             } else {
                 // authority was not provided -> return all active tasks in the system
                 WorkflowTaskQuery taskQuery = new WorkflowTaskQuery();
@@ -292,7 +367,23 @@ public class TaskInstancesGet extends AbstractWorkflowWebscript {
                         break;
                     }
                 } else if (key.equals(PARAM_CUSTOMER_CATEGORY)) {
-                    if (!filterValue.equals(task.getProperties().get(ZitoMediaWorkflowModel.PROP_CUSTOMER_CATEGORY).toString())) {
+                    if (!task.getProperties().containsKey(ZitoMediaWorkflowModel.PROP_CUSTOMER_CATEGORY) || !filterValue.equals(task.getProperties().get(ZitoMediaWorkflowModel.PROP_CUSTOMER_CATEGORY).toString())) {
+                        result = false;
+                        break;
+                    }
+                } else if (key.equals(PARAM_WF_NAME)) {
+                    String wfName = task.getPath().getInstance().getDefinition().getName();
+                    if (logger.isDebugEnabled()) {
+                        logger.debug(String.format("Workflow name is %s", wfName));
+                    }
+                    if (!filterValue.equals(wfName)) {
+                        result = false;
+                        break;
+                    }
+                } else if (key.equals(PARAM_CUSTOM_EXCLUDE)) {
+                    ExcludeFilter excludeFilter = (ExcludeFilter) filterValue;
+                    String type = task.getDefinition().getMetadata().getName().toPrefixString(this.namespaceService);
+                    if (excludeFilter.isMatch(type)) {
                         result = false;
                         break;
                     }
@@ -316,6 +407,89 @@ public class TaskInstancesGet extends AbstractWorkflowWebscript {
             long time2 = date2 == null ? Long.MAX_VALUE : date2.getTime();
 
             long result = time1 - time2;
+
+            return (result > 0) ? 1 : (result < 0 ? -1 : 0);
+        }
+
+    }
+
+    /**
+     * Comparator to sort workflow tasks by due date in descending order.
+     */
+    class WorkflowTaskDueDesComparator implements Comparator<WorkflowTask> {
+        @Override
+        public int compare(WorkflowTask o1, WorkflowTask o2) {
+            Date date1 = (Date) o1.getProperties().get(WorkflowModel.PROP_DUE_DATE);
+            Date date2 = (Date) o2.getProperties().get(WorkflowModel.PROP_DUE_DATE);
+
+            long time1 = date1 == null ? Long.MAX_VALUE : date1.getTime();
+            long time2 = date2 == null ? Long.MAX_VALUE : date2.getTime();
+
+            long result = time2 - time1;
+
+            return (result > 0) ? 1 : (result < 0 ? -1 : 0);
+        }
+
+    }
+
+    /**
+     * Comparator to sort workflow tasks by priority in descending order.
+     */
+    class WorkflowTaskPriorityDesComparator implements Comparator<WorkflowTask> {
+        @Override
+        public int compare(WorkflowTask o1, WorkflowTask o2) {
+            Integer priority1 = (Integer) o1.getProperties().get(WorkflowModel.PROP_PRIORITY);
+            Integer priority2 = (Integer) o2.getProperties().get(WorkflowModel.PROP_PRIORITY);
+
+            int result = priority1 - priority2;
+
+            return (result > 0) ? 1 : (result < 0 ? -1 : 0);
+        }
+
+    }
+
+    /**
+     * Comparator to sort workflow tasks by priority in ascending order.
+     */
+    class WorkflowTaskPriorityAscComparator implements Comparator<WorkflowTask> {
+        @Override
+        public int compare(WorkflowTask o1, WorkflowTask o2) {
+            Integer priority1 = (Integer) o1.getProperties().get(WorkflowModel.PROP_PRIORITY);
+            Integer priority2 = (Integer) o2.getProperties().get(WorkflowModel.PROP_PRIORITY);
+
+            int result = priority2 - priority1;
+
+            return (result > 0) ? 1 : (result < 0 ? -1 : 0);
+        }
+
+    }
+
+    /**
+     * Comparator to sort workflow tasks by name in descending order.
+     */
+    class WorkflowTaskNameDesComparator implements Comparator<WorkflowTask> {
+        @Override
+        public int compare(WorkflowTask o1, WorkflowTask o2) {
+            String name1 = o1.getName();
+            String name2 = o2.getName();
+
+            int result = name1.compareTo(name2);
+
+            return (result > 0) ? 1 : (result < 0 ? -1 : 0);
+        }
+
+    }
+
+    /**
+     * Comparator to sort workflow tasks by name in ascending order.
+     */
+    class WorkflowTaskNameAscComparator implements Comparator<WorkflowTask> {
+        @Override
+        public int compare(WorkflowTask o1, WorkflowTask o2) {
+            String name1 = o1.getName();
+            String name2 = o2.getName();
+
+            int result = name2.compareTo(name1);
 
             return (result > 0) ? 1 : (result < 0 ? -1 : 0);
         }

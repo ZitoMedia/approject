@@ -1,0 +1,6 @@
+<webscript>
+   <shortname>PAF Final Approval Tasks</shortname>
+   <description>Dashlet to list PAF final Approvaltasks assigned to the current user</description>
+   <family>user-dashlet</family>
+   <url>/components/dashlets/paf-final-approval-tasks</url>
+</webscript>

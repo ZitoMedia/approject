@@ -12,6 +12,24 @@
          </properties>
       </component>
 
+       <!-- AP Filter -->
+       <component>
+           <region-id>ap-filter</region-id>
+           <url>/components/workflow/filter/ap</url>
+       </component>
+
+       <!-- PAF Filter -->
+       <component>
+           <region-id>paf-filter</region-id>
+           <url>/components/workflow/filter/paf</url>
+       </component>
+
+       <!-- PAF Filter -->
+       <component>
+           <region-id>others-filter</region-id>
+           <url>/components/workflow/filter/others</url>
+       </component>
+
        <!-- Customer Filter -->
        <component>
            <region-id>customer-filter</region-id>

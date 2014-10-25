@@ -1,0 +1,5 @@
+<webscript>
+  <shortname>AP Filter</shortname>
+  <description>AP filter</description>
+  <url>/components/workflow/filter/ap</url>
+</webscript>

@@ -71,6 +71,19 @@
                 </list>
             </parameter>
         </constraint>
+        <constraint name="zitomedia:pafStatusList" type="LIST">
+            <parameter name="allowedValues">
+                <list>
+                    <value>Manager Assigned</value>
+                    <value>Manager Approved</value>
+                    <value>Manager Rejected</value>
+                    <value>Final Assigned</value>
+                    <value>Final Approved</value>
+                    <value>Final Rejected</value>
+                    <value>HR Processed</value>
+                </list>
+            </parameter>
+        </constraint>
     </constraints>
 
     <types>
@@ -103,6 +116,18 @@
                     <type>d:text</type>
                     <constraints>
                         <constraint ref="zitomedia:statusList"/>
+                    </constraints>
+                </property>
+            </properties>
+        </aspect>
+        <aspect name="zitomedia:paf">
+            <title>PAFable</title>
+            <properties>
+                <property name="zitomedia:pafStatus">
+                    <title>Status</title>
+                    <type>d:text</type>
+                    <constraints>
+                        <constraint ref="zitomedia:pafStatusList"/>
                     </constraints>
                 </property>
             </properties>

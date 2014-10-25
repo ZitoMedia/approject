@@ -1,0 +1,5 @@
+<webscript>
+  <shortname>Others Filter</shortname>
+  <description>Others filter</description>
+  <url>/components/workflow/filter/others</url>
+</webscript>

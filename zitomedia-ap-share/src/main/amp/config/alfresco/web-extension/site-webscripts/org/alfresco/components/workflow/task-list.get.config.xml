@@ -17,36 +17,45 @@
         <filter id="workflows" data="active" parameters=""/>
         <filter id="workflows" data="completed" parameters="pooledTasks=false&amp;state=COMPLETED"/>
 
-        <filter id="customer" data="001" parameters="zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=001"/>
-        <filter id="customer" data="013" parameters="zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=013"/>
-        <filter id="customer" data="023" parameters="zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=023"/>
-        <filter id="customer" data="201" parameters="zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=201"/>
-        <filter id="customer" data="301" parameters="zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=301"/>
-        <filter id="customer" data="401" parameters="zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=401"/>
-        <filter id="customer" data="411" parameters="zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=411"/>
-        <filter id="customer" data="501" parameters="zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=501"/>
-        <filter id="customer" data="601" parameters="zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=601"/>
-        <filter id="customer" data="WJ" parameters="zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=WJ"/>
-        <filter id="customer" data="BC" parameters="zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=BC"/>
-        <filter id="customer" data="CISCO" parameters="zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=CISCO"/>
-        <filter id="customer" data="DONATION" parameters="zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=DONATION"/>
-        <filter id="customer" data="FRANCH" parameters="zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=FRANCH"/>
-        <filter id="customer" data="FUEL" parameters="zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=FUEL"/>
-        <filter id="customer" data="INSUR" parameters="zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=INSUR"/>
-        <filter id="customer" data="INTCIRC" parameters="zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=INT CIRC"/>
-        <filter id="customer" data="NCTCEQ" parameters="zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=NCTC EQ"/>
-        <filter id="customer" data="PO" parameters="zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=PO"/>
-        <filter id="customer" data="POLE" parameters="zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=POLE"/>
-        <filter id="customer" data="PROF" parameters="zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=PROF"/>
-        <filter id="customer" data="PROG" parameters="zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=PROG"/>
-        <filter id="customer" data="PROPTX" parameters="zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=PROP TX"/>
-        <filter id="customer" data="TAX" parameters="zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=TAX"/>
-        <filter id="customer" data="APCKS" parameters="zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=AP CKS"/>
-        <filter id="customer" data="NCTCPR" parameters="zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=NCTC PR"/>
-        <filter id="customer" data="REFCKS" parameters="zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=REF CKS"/>
-        <filter id="customer" data="SCHED" parameters="zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=SCHED"/>
-        <filter id="customer" data="UTIL" parameters="zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=UTIL"/>
-        <filter id="customer" data="MISC" parameters="zitomediawf:zitoMediaFinalReviewTask&amp;customerCategory=MISC"/>
+        <filter id="ap" data="active" parameters="wfName=activiti$ZitomediaMultiLevelReview"/>
+        <filter id="ap" data="completed" parameters="wfName=activiti$ZitomediaMultiLevelReview&amp;pooledTasks=false&amp;state=COMPLETED"/>
+
+        <filter id="paf" data="active" parameters="wfName=activiti$ZitomediaPAFMultiLevelReview"/>
+        <filter id="paf" data="completed" parameters="wfName=activiti$ZitomediaPAFMultiLevelReview&amp;pooledTasks=false&amp;state=COMPLETED"/>
+
+        <filter id="others" data="active" parameters="customExclude=zitomediawf:*"/>
+        <filter id="others" data="completed" parameters="customExclude=zitomediawf:*&amp;pooledTasks=false&amp;state=COMPLETED"/>
+
+        <filter id="customer" data="001" parameters="wfName=activiti$ZitomediaMultiLevelReview&amp;customerCategory=001"/>
+        <filter id="customer" data="013" parameters="wfName=activiti$ZitomediaMultiLevelReview&amp;customerCategory=013"/>
+        <filter id="customer" data="023" parameters="wfName=activiti$ZitomediaMultiLevelReview&amp;customerCategory=023"/>
+        <filter id="customer" data="201" parameters="wfName=activiti$ZitomediaMultiLevelReview&amp;customerCategory=201"/>
+        <filter id="customer" data="301" parameters="wfName=activiti$ZitomediaMultiLevelReview&amp;customerCategory=301"/>
+        <filter id="customer" data="401" parameters="wfName=activiti$ZitomediaMultiLevelReview&amp;customerCategory=401"/>
+        <filter id="customer" data="411" parameters="wfName=activiti$ZitomediaMultiLevelReview&amp;customerCategory=411"/>
+        <filter id="customer" data="501" parameters="wfName=activiti$ZitomediaMultiLevelReview&amp;customerCategory=501"/>
+        <filter id="customer" data="601" parameters="wfName=activiti$ZitomediaMultiLevelReview&amp;customerCategory=601"/>
+        <filter id="customer" data="WJ" parameters="wfName=activiti$ZitomediaMultiLevelReview&amp;customerCategory=WJ"/>
+        <filter id="customer" data="BC" parameters="wfName=activiti$ZitomediaMultiLevelReview&amp;customerCategory=BC"/>
+        <filter id="customer" data="CISCO" parameters="wfName=activiti$ZitomediaMultiLevelReview&amp;customerCategory=CISCO"/>
+        <filter id="customer" data="DONATION" parameters="wfName=activiti$ZitomediaMultiLevelReview&amp;customerCategory=DONATION"/>
+        <filter id="customer" data="FRANCH" parameters="wfName=activiti$ZitomediaMultiLevelReview&amp;customerCategory=FRANCH"/>
+        <filter id="customer" data="FUEL" parameters="wfName=activiti$ZitomediaMultiLevelReview&amp;customerCategory=FUEL"/>
+        <filter id="customer" data="INSUR" parameters="wfName=activiti$ZitomediaMultiLevelReview&amp;customerCategory=INSUR"/>
+        <filter id="customer" data="INTCIRC" parameters="wfName=activiti$ZitomediaMultiLevelReview&amp;customerCategory=INT CIRC"/>
+        <filter id="customer" data="NCTCEQ" parameters="wfName=activiti$ZitomediaMultiLevelReview&amp;customerCategory=NCTC EQ"/>
+        <filter id="customer" data="PO" parameters="wfName=activiti$ZitomediaMultiLevelReview&amp;customerCategory=PO"/>
+        <filter id="customer" data="POLE" parameters="wfName=activiti$ZitomediaMultiLevelReview&amp;customerCategory=POLE"/>
+        <filter id="customer" data="PROF" parameters="wfName=activiti$ZitomediaMultiLevelReview&amp;customerCategory=PROF"/>
+        <filter id="customer" data="PROG" parameters="wfName=activiti$ZitomediaMultiLevelReview&amp;customerCategory=PROG"/>
+        <filter id="customer" data="PROPTX" parameters="wfName=activiti$ZitomediaMultiLevelReview&amp;customerCategory=PROP TX"/>
+        <filter id="customer" data="TAX" parameters="wfName=activiti$ZitomediaMultiLevelReview&amp;customerCategory=TAX"/>
+        <filter id="customer" data="APCKS" parameters="wfName=activiti$ZitomediaMultiLevelReview&amp;customerCategory=AP CKS"/>
+        <filter id="customer" data="NCTCPR" parameters="wfName=activiti$ZitomediaMultiLevelReview&amp;customerCategory=NCTC PR"/>
+        <filter id="customer" data="REFCKS" parameters="wfName=activiti$ZitomediaMultiLevelReview&amp;customerCategory=REF CKS"/>
+        <filter id="customer" data="SCHED" parameters="wfName=activiti$ZitomediaMultiLevelReview&amp;customerCategory=SCHED"/>
+        <filter id="customer" data="UTIL" parameters="wfName=activiti$ZitomediaMultiLevelReview&amp;customerCategory=UTIL"/>
+        <filter id="customer" data="MISC" parameters="wfName=activiti$ZitomediaMultiLevelReview&amp;customerCategory=MISC"/>
 
         <filter id="due" data="today" parameters="dueAfter={-1d}&amp;dueBefore={0d}"/>
         <filter id="due" data="tomorrow" parameters="dueAfter={0d}&amp;dueBefore={1d}"/>

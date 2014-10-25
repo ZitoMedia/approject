@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://activiti.org/bpmn20">
+    <process id="ZitomediaPAFMultiLevelReview" name="Zitomedia PAF Review And Approve Activiti Process" isExecutable="true">
+        <startEvent id="start" activiti:formKey="wf:submitReviewTask"></startEvent>
+        <sequenceFlow id="flow1" sourceRef="start" targetRef="pafManagerReviewTask">
+            <extensionElements>
+                <activiti:executionListener event="start"
+                                            class="org.alfresco.repo.workflow.activiti.listener.ScriptExecutionListener">
+                    <activiti:field name="script">
+                        <activiti:string>for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
+                                var payload =  bpm_package.children[i];
+                                if (!payload.hasAspect('zitomedia:paf')) {
+                                    payload.addAspect('zitomedia:paf');
+                                }
+                                payload.properties['zitomedia:pafStatus'] = 'Manager Assigned';
+                                payload.save();
+                            }
+                        </activiti:string>
+                    </activiti:field>
+                </activiti:executionListener>
+            </extensionElements>
+        </sequenceFlow>
+        <userTask id="pafManagerReviewTask" name="PAF Manager Review Task" activiti:assignee="${bpm_assignee.properties.userName}" activiti:formKey="zitomediawf:zitoMediaPAFManagerReviewTask">
+            <extensionElements>
+                <activiti:taskListener event="create" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
+                    <activiti:field name="script">
+                        <activiti:string>task.description = "Manager reviews PAF document ";
+                            if ( bpm_package.children.length &gt; 0 ) {
+                                task.description += bpm_package.children[0].properties['cm:name'];
+                            }
+                            if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate
+                            if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;
+                        </activiti:string>
+                    </activiti:field>
+                </activiti:taskListener>
+                <activiti:taskListener event="complete" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
+                    <activiti:field name="script">
+                        <activiti:string>var reviewOutcome = task.getVariable('wf_reviewOutcome');
+                            execution.setVariable('wf_reviewOutcome', reviewOutcome);
+                            for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
+                                if (!bpm_package.children[i].hasAspect('zitomedia:paf')) {
+                                    bpm_package.children[i].addAspect('zitomedia:paf');
+                                    bpm_package.children[i].save();
+                                }
+                                if (reviewOutcome == 'Approve') {
+                                    bpm_package.children[i].properties['zitomedia:pafStatus'] = 'Manager Approved';
+                                } else {
+                                    bpm_package.children[i].properties['zitomedia:pafStatus'] = 'Manager Rejected';
+                                }
+                                bpm_package.children[i].save();
+                            }
+                        </activiti:string>
+                    </activiti:field>
+                </activiti:taskListener>
+            </extensionElements>
+        </userTask>
+        <sequenceFlow id="flow2" sourceRef="pafManagerReviewTask" targetRef="pafManagerReviewDecision"></sequenceFlow>
+        <exclusiveGateway id="pafManagerReviewDecision" name="PAF Manager Review Decision"></exclusiveGateway>
+        <sequenceFlow id="flow3" sourceRef="pafManagerReviewDecision" targetRef="pafFinalReviewTask">
+            <conditionExpression xsi:type="tFormalExpression"><![CDATA[${wf_reviewOutcome == 'Approve'}]]></conditionExpression>
+        </sequenceFlow>
+        <sequenceFlow id="flow4" sourceRef="pafManagerReviewDecision" targetRef="pafManagerRejected">
+            <conditionExpression xsi:type="tFormalExpression"><![CDATA[${wf_reviewOutcome == 'Reject'}]]></conditionExpression>
+        </sequenceFlow>
+        <userTask id="pafManagerRejected" name="PAF Manager Rejected" activiti:assignee="${initiator.properties.userName}" activiti:formKey="zitomediawf:zitoMediaPAFManagerRejectedTask">
+            <documentation>The PAF document was reviewed and rejected by manager.</documentation>
+            <extensionElements>
+                <activiti:taskListener event="create" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
+                    <activiti:field name="runAs"><activiti:string>admin</activiti:string></activiti:field>
+                    <activiti:field name="script">
+                        <activiti:string>task.description = "Review manager rejected PAF document ";
+                            if ( bpm_package.children.length &gt; 0 ) {
+                                task.description += bpm_package.children[0].properties['cm:name'];
+                            }
+                            if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate
+                            if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;
+                            for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
+                                var payload = bpm_package.children[i];
+
+                            }
+                        </activiti:string>
+                    </activiti:field>
+                </activiti:taskListener>
+            </extensionElements>
+        </userTask>
+        <sequenceFlow id="flow6" sourceRef="pafManagerRejected" targetRef="pafEndEvent"></sequenceFlow>
+        <exclusiveGateway id="pafFinalReviewDecision" name="PAF Final Review Decision"></exclusiveGateway>
+        <userTask id="pafFinalReviewTask" name="PAF Final Review Task" activiti:assignee="james.rigas" activiti:formKey="zitomediawf:zitoMediaPAFFinalReviewTask">
+            <extensionElements>
+                <activiti:taskListener event="create" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
+                    <activiti:field name="runAs"><activiti:string>admin</activiti:string></activiti:field>
+                    <activiti:field name="script">
+                        <activiti:string>task.description = "Performs final review of PAF document ";
+                            if ( bpm_package.children.length &gt; 0 ) {
+                                task.description += bpm_package.children[0].properties['cm:name'];
+                            }
+                            if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate
+                            if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;
+                            for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
+                                var payload = bpm_package.children[i];
+                                var parent = payload.parent.parent.parent;
+                                if (parent != null &amp;&amp; parent.childByNamePath('Processing') != null) {
+                                    var processingFolder = parent.childByNamePath('Processing').childByNamePath(initiator.properties.userName);
+                                    if (processingFolder != null) {
+                                        payload.move(processingFolder);
+                                    }
+                                }
+                            }
+                        </activiti:string>
+                    </activiti:field>
+                </activiti:taskListener>
+                <activiti:taskListener event="complete" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
+                    <activiti:field name="script">
+                        <activiti:string>var reviewOutcome = task.getVariable('wf_reviewOutcome');
+                            execution.setVariable('wf_reviewOutcome', reviewOutcome);
+                            //execution.setVariable('bpm_assignee', person);
+                            for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
+                                var payload = bpm_package.children[i];
+                                if (reviewOutcome == 'Approve') {
+                                    payload.properties['zitomedia:pafStatus'] = 'Final Approved';
+                                    payload.save();
+                                } else {
+                                    payload.properties['zitomedia:pafStatus'] = 'Final Rejected';
+                                    payload.save();
+                                    var parent = payload.parent.parent.parent;
+                                    if (parent != null &amp;&amp; parent.childByNamePath('Supervisors') != null) {
+                                        var supervisorFolder = parent.childByNamePath('Supervisors').childByNamePath(initiator.properties.userName);
+                                        if (supervisorFolder != null) {
+                                            payload.move(supervisorFolder);
+                                        }
+                                    }
+                                }
+                            }
+                        </activiti:string>
+                    </activiti:field>
+                </activiti:taskListener>
+            </extensionElements>
+        </userTask>
+        <sequenceFlow id="flow12" sourceRef="pafFinalReviewTask" targetRef="pafFinalReviewDecision"></sequenceFlow>
+        <sequenceFlow id="flow13" sourceRef="pafFinalReviewDecision" targetRef="pafHRProcess">
+            <conditionExpression xsi:type="tFormalExpression"><![CDATA[${wf_reviewOutcome == 'Approve'}]]></conditionExpression>
+        </sequenceFlow>
+        <sequenceFlow id="flow14" sourceRef="pafFinalReviewDecision" targetRef="pafManagerReviewTask">
+            <conditionExpression xsi:type="tFormalExpression"><![CDATA[${wf_reviewOutcome == 'Reject'}]]></conditionExpression>
+        </sequenceFlow>
+ 
+        <userTask id="pafHRProcess" name="PAF HR Process" activiti:assignee="deb.kelley" activiti:formKey="zitomediawf:zitoMediaPAFHRProcessTask">
+            <documentation>The PAF document has been approved and needs to be processed.</documentation>
+            <extensionElements>
+                <activiti:taskListener event="create" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
+                    <activiti:field name="script">
+                        <activiti:string>task.description = "Process PAF document ";
+                            if ( bpm_package.children.length &gt; 0 ) {
+                                task.description += bpm_package.children[0].properties['cm:name'];
+                            }
+                            if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate
+                            if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;
+                            for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
+                            }</activiti:string>
+                    </activiti:field>
+                </activiti:taskListener>
+                <activiti:taskListener event="complete" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
+                    <activiti:field name="script">
+                        <activiti:string>for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
+                                var payload = bpm_package.children[i];
+                                payload.properties['zitomedia:pafStatus'] = 'HR Processed';
+                                payload.save();
+                                var parent = payload.parent.parent.parent;
+                                if (parent != null &amp;&amp; parent.childByNamePath('Processed') != null) {
+                                    var processedFolder = parent.childByNamePath('Processed').childByNamePath(initiator.properties.userName);
+                                    if (processedFolder != null) {
+                                        payload.move(processedFolder);
+                                    }
+                                }
+                            }
+                        </activiti:string>
+                    </activiti:field>
+                </activiti:taskListener>
+            </extensionElements>
+        </userTask>
+        <userTask id="pafProcessCompleted" name="PAF Process Completed" activiti:assignee="${initiator.properties.userName}" activiti:formKey="zitomediawf:zitoMediaPAFCompletedTask">
+            <documentation>Process completed.</documentation>
+            <extensionElements>
+                <activiti:taskListener event="create" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
+                    <activiti:field name="script">
+                        <activiti:string>task.description = "Completes review process for PDF Document ";
+                            if ( bpm_package.children.length &gt; 0 ) {
+                                task.description += bpm_package.children[0].properties['cm:name'];
+                            }
+                            if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate
+                            if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;
+                            for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
+                            }</activiti:string>
+                    </activiti:field>
+                </activiti:taskListener>
+            </extensionElements>
+        </userTask>
+        <sequenceFlow id="flow15" sourceRef="pafHRProcess" targetRef="pafProcessCompleted"></sequenceFlow>
+        <endEvent id="pafEndEvent" name="End"></endEvent>
+        <sequenceFlow id="flow17" sourceRef="pafProcessCompleted" targetRef="pafEndEvent"></sequenceFlow>
+    </process>
+</definitions>

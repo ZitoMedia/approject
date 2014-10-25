@@ -1,0 +1,6 @@
+<webscript>
+   <shortname>Non-ZitoMedia Tasks</shortname>
+   <description>Dashlet to list Non-ZitoMedia tasks assigned to the current user</description>
+   <family>user-dashlet</family>
+   <url>/components/dashlets/other-tasks</url>
+</webscript>

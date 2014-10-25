@@ -1,0 +1,6 @@
+<config>
+    <filters>
+        <filter id="ap" data="active" label="link.active"/>
+        <filter id="ap" data="completed" label="link.completed"/>
+    </filters>
+</config>

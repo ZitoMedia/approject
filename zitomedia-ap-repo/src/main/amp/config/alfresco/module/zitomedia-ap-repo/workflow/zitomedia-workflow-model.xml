@@ -53,6 +53,7 @@
     </constraints>
 
     <types>
+        <!-- AP -->
         <type name="zitomediawf:zitoMediaSupervisorReviewTask">
             <parent>wf:activitiReviewTask</parent>
         </type>
@@ -91,6 +92,22 @@
         </type>
         <type name="zitomediawf:zitoMediaSupervisorRejectedTask">
             <parent>wf:rejectedTask</parent>
+        </type>
+        <!-- PAF -->
+        <type name="zitomediawf:zitoMediaPAFManagerReviewTask">
+            <parent>wf:activitiReviewTask</parent>
+        </type>
+        <type name="zitomediawf:zitoMediaPAFManagerRejectedTask">
+            <parent>wf:rejectedTask</parent>
+        </type>
+        <type name="zitomediawf:zitoMediaPAFFinalReviewTask">
+            <parent>wf:activitiReviewTask</parent>
+        </type>
+        <type name="zitomediawf:zitoMediaPAFHRProcessTask">
+            <parent>bpm:workflowTask</parent>
+        </type>
+        <type name="zitomediawf:zitoMediaPAFCompletedTask">
+            <parent>wf:approvedTask</parent>
         </type>
     </types>
 
