@@ -38,7 +38,7 @@ The properties file needs to provide the location of the local Alfresco instance
 alfresco.root=/Users/drq/dev/alfresco/alfresco-5.0.a
 ```
 
-## Setup ##
+## Setup AP Site##
 
 1. Create a new share site such as account-payable
 2. Add Accounting Group and James Rigas to the site as Site Manager
@@ -62,4 +62,29 @@ alfresco.root=/Users/drq/dev/alfresco/alfresco-5.0.a
         * Use the "AP Invoices" space template to create it.
         * Add an additional sub-folder with name "Supervisor Rejected"
 9. For Accounting group users and James Rigas user, they can customize their dashboard and replace "My Tasks" 
-dashlet with "Final Approval Tasks" dashlet.        
+dashlet with "AP Tasks" dashlet or "Non-ZitoMedia Tasks" dashlet.  
+      
+## Setup PAF Site##
+
+1. Create a new share site such as paf-payable
+2. Add Debb Kelly and James Rigas to the site as Site Manager
+3. Add all supervisors and their managers to the site as Site Consumer
+4. Browse to the Document Library page of the site
+5. Under the root folder, create a folder with name PAF Documents
+6. Under the PAF Documents folder, create following sub folders
+    * Supervisors
+        * For each supervisor, create a sub folder with his user id as the folder name
+        * Go the "Managing Permissions" page of the sub folder
+        * Disable "Inherited Permissions" of the sub folder and then add the supervisor and his manager as Collaborator for the folder.
+        * The corresponding supervisor of the folder also needs to be added as Collaborator of the folder.
+        * This will be folder that supervisors drop documents and start the PAF approval workflow
+    * Processing
+        * Go the "Managing Permissions" page of the folder
+        * Disable "Inherited Permissions" and then add Debb Kelly and James Rigas as Manager for the folder
+        * For each supervisor, create a sub folder with his user id as the folder name
+    * Processed
+        * Go the "Managing Permissions" page of the folder
+        * Disable "Inherited Permissions" and then add Debb Kelly and James Rigas as Manager for the folder
+        * For each supervisor, create a sub folder with his user id as the folder name
+7. For all users, they can customize their dashboard and replace "My Tasks" 
+dashlet with "PAF Tasks" dashlet or "Non-ZitoMedia Tasks" dashlet.        
