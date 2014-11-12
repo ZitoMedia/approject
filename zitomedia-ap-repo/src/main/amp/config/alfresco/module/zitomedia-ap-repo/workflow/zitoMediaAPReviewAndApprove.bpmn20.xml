@@ -101,7 +101,7 @@
             </extensionElements>
         </userTask>
         <sequenceFlow id="flow6" sourceRef="supervisorRejected" targetRef="endevent1"></sequenceFlow>
-        <userTask id="apProcessTask" name="AP Process Task" activiti:candidateGroups="GROUP_Accounting" activiti:formKey="zitomediawf:zitoMediaAPProcessTask">
+        <userTask id="apProcessTask" name="AP Process Task" activiti:candidateGroups="GROUP_AccountsPayable" activiti:formKey="zitomediawf:zitoMediaAPProcessTask">
             <extensionElements>
                 <activiti:taskListener event="create" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
                     <activiti:field name="script">
@@ -197,7 +197,7 @@
         <sequenceFlow id="flow14" sourceRef="finalReviewDecision" targetRef="apReviewTask">
             <conditionExpression xsi:type="tFormalExpression"><![CDATA[${wf_reviewOutcome == 'Reject'}]]></conditionExpression>
         </sequenceFlow>
-        <userTask id="apReviewTask" name="AP Review Task" activiti:candidateGroups="GROUP_Accounting" activiti:formKey="zitomediawf:zitoMediaAPReviewTask">
+        <userTask id="apReviewTask" name="AP Review Task" activiti:candidateGroups="GROUP_AccountsPayable" activiti:formKey="zitomediawf:zitoMediaAPReviewTask">
             <extensionElements>
                 <activiti:taskListener event="create" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
                     <activiti:field name="script">
@@ -267,7 +267,7 @@
         <!--
         <sequenceFlow id="flow16" sourceRef="finalRejected" targetRef="apReviewTask"></sequenceFlow>
         -->
-        <userTask id="payCustomer" name="Pay Customer" activiti:candidateGroups="GROUP_Accounting" activiti:formKey="zitomediawf:zitoMediaPayCustomerTask">
+        <userTask id="payCustomer" name="Pay Customer" activiti:candidateGroups="GROUP_AccountsPayable" activiti:formKey="zitomediawf:zitoMediaPayCustomerTask">
             <documentation>The invoice has been approved and invoice needs to send to customer.</documentation>
             <extensionElements>
                 <activiti:taskListener event="create" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
