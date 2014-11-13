@@ -1,6 +1,7 @@
 package com.zitomedia.repo.web.scripts.workflow;
 
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -20,6 +21,7 @@ import org.alfresco.service.cmr.workflow.WorkflowTask;
 import org.alfresco.service.cmr.workflow.WorkflowTaskQuery;
 import org.alfresco.service.cmr.workflow.WorkflowTaskQuery.OrderBy;
 import org.alfresco.service.cmr.workflow.WorkflowTaskState;
+import org.alfresco.service.namespace.QName;
 import org.alfresco.util.ModelUtil;
 import org.apache.log4j.Logger;
 import org.springframework.extensions.webscripts.Cache;
@@ -367,7 +369,10 @@ public class TaskInstancesGet extends AbstractWorkflowWebscript {
                         break;
                     }
                 } else if (key.equals(PARAM_CUSTOMER_CATEGORY)) {
-                    if (!task.getProperties().containsKey(ZitoMediaWorkflowModel.PROP_CUSTOMER_CATEGORY) || !filterValue.equals(task.getProperties().get(ZitoMediaWorkflowModel.PROP_CUSTOMER_CATEGORY).toString())) {
+                    Map<QName, Serializable> taskProperties = task.getProperties();
+                    if (!taskProperties.containsKey(ZitoMediaWorkflowModel.PROP_CUSTOMER_CATEGORY)
+                            || taskProperties.get(ZitoMediaWorkflowModel.PROP_CUSTOMER_CATEGORY) == null
+                            || !filterValue.equals(taskProperties.get(ZitoMediaWorkflowModel.PROP_CUSTOMER_CATEGORY).toString())) {
                         result = false;
                         break;
                     }
