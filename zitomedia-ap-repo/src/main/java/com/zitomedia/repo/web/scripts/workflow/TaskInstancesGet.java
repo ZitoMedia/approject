@@ -475,10 +475,22 @@ public class TaskInstancesGet extends AbstractWorkflowWebscript {
     class WorkflowTaskNameDesComparator implements Comparator<WorkflowTask> {
         @Override
         public int compare(WorkflowTask o1, WorkflowTask o2) {
-            String name1 = o1.getName();
-            String name2 = o2.getName();
 
-            int result = name1.compareTo(name2);
+            String name1 = o1.getDescription();
+            String name2 = o2.getDescription();
+
+            int result = name2.compareTo(name1);
+
+            if (logger.isDebugEnabled()) {
+                logger.debug(String.format("NameDesComparator [%s] [%s] [%d]", name1, name2, result));
+                /*
+                logger.debug("Title:" + o1.getTitle());
+                logger.debug("Description:" + o1.getDescription());
+                for (QName key : o1.getProperties().keySet()) {
+                    logger.debug("Key:" + key + ";value=" + o1.getProperties().get(key));
+                }
+                */
+            }
 
             return (result > 0) ? 1 : (result < 0 ? -1 : 0);
         }
@@ -491,10 +503,14 @@ public class TaskInstancesGet extends AbstractWorkflowWebscript {
     class WorkflowTaskNameAscComparator implements Comparator<WorkflowTask> {
         @Override
         public int compare(WorkflowTask o1, WorkflowTask o2) {
-            String name1 = o1.getName();
-            String name2 = o2.getName();
+            String name1 = o1.getDescription();
+            String name2 = o2.getDescription();
 
-            int result = name2.compareTo(name1);
+            int result = name1.compareTo(name2);
+
+            if (logger.isDebugEnabled()) {
+                logger.debug(String.format("NameAscComparator [%s] [%s] [%d]", name1, name2, result));
+            }
 
             return (result > 0) ? 1 : (result < 0 ? -1 : 0);
         }
