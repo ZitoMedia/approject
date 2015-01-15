@@ -230,10 +230,15 @@
                             }
                             if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate
                             if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;
-                            for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
-                                task.setVariableLocal('zitomediawf_voucherNumber', bpm_package.children[i].properties['zitomedia:voucherNumber']);
-                                task.setVariableLocal('zitomediawf_customerCategory', bpm_package.children[i].properties['zitomedia:customerCategory']);
+                            //for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
+                            task.setVariableLocal('zitomediawf_voucherNumber', bpm_package.children[0].properties['zitomedia:voucherNumber']);
+                            task.setVariableLocal('zitomediawf_customerCategory', bpm_package.children[0].properties['zitomedia:customerCategory']);
+                            if (logger.isLoggingEnabled()) {
+                                logger.log(task.description);
+                                logger.log("finalReviewTask zitomediawf_voucherNumber:" + task.getVariable('zitomediawf_voucherNumber'));
+                                logger.log("finalReviewTask zitomediawf_customerCategory:" + task.getVariable('zitomediawf_customerCategory')) ;
                             }
+                            //}
                         </activiti:string>
                     </activiti:field>
                 </activiti:taskListener>
@@ -282,9 +287,14 @@
                             }
                             if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate
                             if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;
-                            for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
-                                task.setVariableLocal('zitomediawf_voucherNumber', bpm_package.children[i].properties['zitomedia:voucherNumber']);
-                                task.setVariableLocal('zitomediawf_customerCategory', bpm_package.children[i].properties['zitomedia:customerCategory']);
+                            //for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
+                            task.setVariableLocal('zitomediawf_voucherNumber', bpm_package.children[0].properties['zitomedia:voucherNumber']);
+                            task.setVariableLocal('zitomediawf_customerCategory', bpm_package.children[0].properties['zitomedia:customerCategory']);
+                            //}
+                            if (logger.isLoggingEnabled()) {
+                                logger.log(task.description);
+                                logger.log("apReviewTask zitomediawf_voucherNumber:" + task.getVariable('zitomediawf_voucherNumber'));
+                                logger.log("apReviewTask zitomediawf_customerCategory:" + task.getVariable('zitomediawf_customerCategory')) ;
                             }
                         </activiti:string>
                     </activiti:field>
@@ -353,10 +363,16 @@
                             }
                             if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate
                             if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;
-                            for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
-                                task.setVariableLocal('zitomediawf_voucherNumber', bpm_package.children[i].properties['zitomedia:voucherNumber']);
-                                task.setVariableLocal('zitomediawf_customerCategory', bpm_package.children[i].properties['zitomedia:customerCategory']);
-                            }</activiti:string>
+                            //for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
+                                task.setVariableLocal('zitomediawf_voucherNumber', bpm_package.children[0].properties['zitomedia:voucherNumber']);
+                                task.setVariableLocal('zitomediawf_customerCategory', bpm_package.children[0].properties['zitomedia:customerCategory']);
+                            //}
+                            if (logger.isLoggingEnabled()) {
+                                logger.log(task.description);
+                                logger.log("payCustomer zitomediawf_voucherNumber:" + task.getVariable('zitomediawf_voucherNumber'));
+                                logger.log("payCustomer zitomediawf_customerCategory:" + task.getVariable('zitomediawf_customerCategory')) ;
+                            }
+                        </activiti:string>
                     </activiti:field>
                 </activiti:taskListener>
                 <activiti:taskListener event="complete" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
@@ -390,10 +406,16 @@
                             }
                             if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate
                             if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;
-                            for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
-                                task.setVariableLocal('zitomediawf_voucherNumber', bpm_package.children[i].properties['zitomedia:voucherNumber']);
-                                task.setVariableLocal('zitomediawf_customerCategory', bpm_package.children[i].properties['zitomedia:customerCategory']);
-                            }</activiti:string>
+                            //for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
+                                task.setVariableLocal('zitomediawf_voucherNumber', bpm_package.children[0].properties['zitomedia:voucherNumber']);
+                                task.setVariableLocal('zitomediawf_customerCategory', bpm_package.children[0].properties['zitomedia:customerCategory']);
+                            //}
+                            if (logger.isLoggingEnabled()) {
+                                logger.log(task.description);
+                                logger.log("processCompleted zitomediawf_voucherNumber:" + task.getVariable('zitomediawf_voucherNumber'));
+                                logger.log("processComplated zitomediawf_customerCategory:" + task.getVariable('zitomediawf_customerCategory')) ;
+                            }
+                        </activiti:string>
                     </activiti:field>
                 </activiti:taskListener>
             </extensionElements>
