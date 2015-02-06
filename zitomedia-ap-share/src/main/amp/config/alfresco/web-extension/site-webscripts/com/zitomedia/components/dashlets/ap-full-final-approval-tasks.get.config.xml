@@ -1,0 +1,67 @@
+<config>
+    <max-items>50</max-items>
+    <filter-menu>
+        <!--
+           The value of the "parameters" attribute will be added to the end of the task-instances webscript url
+
+           Note that it is possible to create dynamic values by using the following keys inside "{}":
+            * {0dt} - resolves to a iso08601 datetime representation of the current date and time
+            * {0d} - resolves to a iso8601 date representation of the current day
+            * {-7d} - resolves to a iso8601 date representation of the current day rolled the given number of days back
+            * {+7d} - resolves to a iso8601 date representation of the current day rolled the given number of days forward
+        -->
+        <filter type="allCustomers" parameters="wfName=activiti$ZitoAPFull"/>
+        <filter type="customer001" parameters="wfName=activiti$ZitoAPFull&amp;customerCategory=001"/>
+        <filter type="customer013" parameters="wfName=activiti$ZitoAPFull&amp;customerCategory=013"/>
+        <filter type="customer023" parameters="wfName=activiti$ZitoAPFull&amp;customerCategory=023"/>
+        <filter type="customer201" parameters="wfName=activiti$ZitoAPFull&amp;customerCategory=201"/>
+        <filter type="customer301" parameters="wfName=activiti$ZitoAPFull&amp;customerCategory=301"/>
+        <filter type="customer401" parameters="wfName=activiti$ZitoAPFull&amp;customerCategory=401"/>
+        <filter type="customer411" parameters="wfName=activiti$ZitoAPFull&amp;customerCategory=411"/>
+        <filter type="customer501" parameters="wfName=activiti$ZitoAPFull&amp;customerCategory=501"/>
+        <filter type="customer601" parameters="wfName=activiti$ZitoAPFull&amp;customerCategory=601"/>
+        <filter type="customerWJ" parameters="wfName=activiti$ZitoAPFull&amp;customerCategory=WJ"/>
+        <filter type="customerBC" parameters="wfName=activiti$ZitoAPFull&amp;customerCategory=BC"/>
+        <filter type="customerCISCO" parameters="wfName=activiti$ZitoAPFull&amp;customerCategory=CISCO"/>
+        <filter type="customerDONATION" parameters="wfName=activiti$ZitoAPFull&amp;customerCategory=DONATION"/>
+        <filter type="customerFRANCH" parameters="wfName=activiti$ZitoAPFull&amp;customerCategory=FRANCH"/>
+        <filter type="customerFUEL" parameters="wfName=activiti$ZitoAPFull&amp;customerCategory=FUEL"/>
+        <filter type="customerINSUR" parameters="wfName=activiti$ZitoAPFull&amp;customerCategory=INSUR"/>
+        <filter type="customerINTCIRC" parameters="wfName=activiti$ZitoAPFull&amp;customerCategory=INT CIRC"/>
+        <filter type="customerNCTCEQ" parameters="wfName=activiti$ZitoAPFull&amp;customerCategory=NCTC EQ"/>
+        <filter type="customerPO" parameters="wfName=activiti$ZitoAPFull&amp;customerCategory=PO"/>
+        <filter type="customerPOLE" parameters="wfName=activiti$ZitoAPFull&amp;customerCategory=POLE"/>
+        <filter type="customerPROF" parameters="wfName=activiti$ZitoAPFull&amp;customerCategory=PROF"/>
+        <filter type="customerPROG" parameters="wfName=activiti$ZitoAPFull&amp;customerCategory=PROG"/>
+        <filter type="customerPROPTX" parameters="wfName=activiti$ZitoAPFull&amp;customerCategory=PROP TX"/>
+        <filter type="customerTAX" parameters="wfName=activiti$ZitoAPFull&amp;customerCategory=TAX"/>
+        <filter type="customerAPCKS" parameters="wfName=activiti$ZitoAPFull&amp;customerCategory=AP CKS"/>
+        <filter type="customerNCTCPR" parameters="wfName=activiti$ZitoAPFull&amp;customerCategory=NCTC PR"/>
+        <filter type="customerREFCKS" parameters="wfName=activiti$ZitoAPFull&amp;customerCategory=REF CKS"/>
+        <filter type="customerSCHED" parameters="wfName=activiti$ZitoAPFull&amp;customerCategory=SCHED"/>
+        <filter type="customerUTIL" parameters="wfName=activiti$ZitoAPFull&amp;customerCategory=UTIL"/>
+        <filter type="customerMISC" parameters="wfName=activiti$ZitoAPFull&amp;customerCategory=MISC"/>
+        <!--
+        <filter type="activeTasks" parameters=""/>
+        -->
+        <filter type="completedTasks" parameters="wfName=activiti$ZitoAPFull&amp;pooledTasks=false&amp;state=COMPLETED"/>
+        <!--
+        <filter type="finalApprovalTasks"    parameters="wfName=activiti$ZitoAPFull"/>
+        <filter type="activeTasks"           parameters=""/>
+        <filter type="completedTasks"        parameters="pooledTasks=false&amp;state=COMPLETED"/>
+        <filter type="highPriorityTasks"     parameters="priority=1"/>
+        <filter type="tasksDueToday"         parameters="dueAfter={-1d}&amp;dueBefore={0d}"/>
+        <filter type="tasksAssignedToMe"     parameters="pooledTasks=false"/>
+        <filter type="unassignedPooledTasks" parameters="pooledTasks=true" />
+        <filter type="overdueTasks"          parameters="dueBefore={-1d}"/>
+        -->
+    </filter-menu>
+    <sort-menu>
+        <sort type="dueDes" parameters="sortBy=due&amp;direction=des"/>
+        <sort type="dueAsc" parameters="sortBy=due&amp;direction=asc"/>
+        <sort type="priorityDes" parameters="sortBy=priority&amp;direction=des"/>
+        <sort type="priorityAsc" parameters="sortBy=priority&amp;direction=asc"/>
+        <sort type="nameDes" parameters="sortBy=name&amp;direction=des"/>
+        <sort type="nameAsc" parameters="sortBy=name&amp;direction=asc"/>
+    </sort-menu>
+</config>

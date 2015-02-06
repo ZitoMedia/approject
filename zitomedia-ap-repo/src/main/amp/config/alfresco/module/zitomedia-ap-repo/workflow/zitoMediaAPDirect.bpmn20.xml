@@ -1,22 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://activiti.org/bpmn20">
-    <process id="ZitomediaMultiLevelReview" name="Zito AP Full Group workflow" isExecutable="true">
+    <process id="ZitoAPDirect" name="Zito AP Direct workflow" isExecutable="true">
         <startEvent id="start" activiti:formKey="wf:submitParallelReviewTask"></startEvent>
-        <sequenceFlow id="flow1" sourceRef="start" targetRef="supervisorReviewTask">
+        <sequenceFlow id="flow1" sourceRef="start" targetRef="apProcessTask">
             <extensionElements>
                 <activiti:executionListener event="start"
                                             class="org.alfresco.repo.workflow.activiti.listener.ScriptExecutionListener">
                     <activiti:field name="runAs"><activiti:string>admin</activiti:string></activiti:field>
                     <activiti:field name="script">
-                        <activiti:string>execution.setVariable('wf_approveCount', 0);
-                            execution.setVariable('wf_rejectCount', 0);
-                            execution.setVariable('wf_actualPercent', 0);
-                            execution.setVariable('wf_actualRejectPercent', 0);
-                            execution.setVariable('wf_reviewerCount', bpm_assignees.size());
-                            execution.setVariable('wf_requiredPercent', 100);
-                            var UUID = new Date().getTime();
+                        <activiti:string>var UUID = new Date().getTime();
                             if (logger.isLoggingEnabled()) {
-                                logger.log("Zito AP Full Group workflow started " + UUID);
+                                logger.log("Zito AP Direct workflow started " + UUID);
                             }
                             for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
                                 var payload =  bpm_package.children[i];
@@ -27,15 +21,7 @@
                                 payload.properties['zitomedia:status'] = 'Supervisor Assigned';
                                 payload.save();
                                 if (logger.isLoggingEnabled()) {
-                                    logger.log("Zito AP Full Group workflow " + UUID + " Payload: " + payload.properties['cm:name']);
-                                }
-                                if (bpm_assignees.size() &gt; 0) {
-                                    for (var j = 0, length2 = bpm_assignees.size(); j &lt; length2 ; j++) {
-                                        payload.setPermission("Collaborator", bpm_assignees.get(j).properties.userName);
-                                        if (logger.isLoggingEnabled()) {
-                                            logger.log("Zito AP Full Group workflow " + UUID + " Assigned supervisor: " + bpm_assignees.get(j).properties.userName);
-                                        }
-                                    }
+                                    logger.log("Zito AP Direct workflow " + UUID + " Payload: " + payload.properties['cm:name']);
                                 }
                                 var parent = payload.parent.parent;
                                 if (parent != null) {
@@ -44,15 +30,10 @@
                                         var assignedFolder = assignedParent.childByNamePath(UUID);
                                         if (assignedFolder == null) {
                                             assignedFolder = assignedParent.createFolder(UUID);
-                                            if (bpm_assignees.size() &gt; 0) {
-                                                for (var j = 0, length2 = bpm_assignees.size(); j &lt; length2 ; j++) {
-                                                    assignedFolder.setPermission("Consumer", bpm_assignees.get(j).properties.userName);
-                                                }
-                                            }
                                         }
                                         payload.move(assignedFolder);
                                         if (logger.isLoggingEnabled()) {
-                                            logger.log("Zito AP Full Group workflow " + UUID + " moved payload to assigned folder");
+                                            logger.log("Zito AP Direct workflow " + UUID + " moved payload to assigned folder");
                                         }
                                     }
                                 }
@@ -62,138 +43,11 @@
                 </activiti:executionListener>
             </extensionElements>
         </sequenceFlow>
-        <userTask id="supervisorReviewTask" name="Supervisor Review Task" activiti:formKey="zitomediawf:zitoMediaSupervisorReviewTask">
+        <userTask id="apProcessTask" name="AP Process Task" activiti:assignee="betsy.ayers" activiti:formKey="zitomediawf:zitoMediaAPProcessTask">
             <extensionElements>
                 <activiti:taskListener event="create" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
                     <activiti:field name="script">
-                        <activiti:string>task.description = "Supervisor reviews invoice ";
-                            if ( bpm_package.children.length &gt; 0 ) {
-                                task.description += bpm_package.children[0].properties['cm:name'];
-                            }
-                            if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate
-                            if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;
-                            if (logger.isLoggingEnabled()) {
-                                logger.log("Zito AP Full Group workflow : Task " + task.id + ":" + " supervisorReviewTask created" + task.description);
-                            }
-                        </activiti:string>
-                    </activiti:field>
-                </activiti:taskListener>
-                <activiti:taskListener event="complete" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
-                    <activiti:field name="script">
-                        <activiti:string>if(task.getVariableLocal('wf_reviewOutcome') == 'Approve') {
-                                var newApprovedCount = wf_approveCount + 1;
-                                var newApprovedPercentage = (newApprovedCount / wf_reviewerCount) * 100;
-
-                                execution.setVariable('wf_approveCount', newApprovedCount);
-                                execution.setVariable('wf_actualPercent', newApprovedPercentage);
-                            } else {
-                                var newRejectCount = wf_rejectCount + 1;
-                                var newRejectPercentage = (newRejectCount / wf_reviewerCount) * 100;
-
-                                execution.setVariable('wf_rejectCount', newRejectCount);
-                                execution.setVariable('wf_actualRejectPercent', newRejectPercentage);
-                            }
-
-                            var reviewOutcome = task.getVariable('wf_reviewOutcome');
-                            execution.setVariable('wf_reviewOutcome', reviewOutcome);
-                            for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
-                                if (!bpm_package.children[i].hasAspect('zitomedia:ap')) {
-                                    bpm_package.children[i].addAspect('zitomedia:ap');
-                                    bpm_package.children[i].save();
-                                }
-                                if (reviewOutcome == 'Approve') {
-                                    bpm_package.children[i].properties['zitomedia:status'] = 'Supervisor Approved';
-                                } else {
-                                    bpm_package.children[i].properties['zitomedia:status'] = 'Supervisor Rejected';
-                                }
-                                bpm_package.children[i].save();
-                            }
-                            if (logger.isLoggingEnabled()) {
-                                logger.log("Zito AP Full Group workflow : Task " + task.id + ":" + " supervisorReviewTask completed " + reviewOutcome + " by " + person.properties.userName);
-                                logger.log("Zito AP Full Group workflow : Task " + task.id + ":" + " wf_actualPercent " + task.getVariable('wf_actualPercent'));
-                                logger.log("Zito AP Full Group workflow : Task " + task.id + ":" + " wf_actualRejectPercent " + task.getVariable('wf_actualRejectPercent'));
-                            }
-                        </activiti:string>
-                    </activiti:field>
-                </activiti:taskListener>
-            </extensionElements>
-
-            <humanPerformer>
-                <resourceAssignmentExpression>
-                    <formalExpression>${reviewAssignee.properties.userName}</formalExpression>
-                </resourceAssignmentExpression>
-            </humanPerformer>
-            <!-- For each assignee, task is created -->
-            <multiInstanceLoopCharacteristics isSequential="false">
-                <loopDataInputRef>bpm_assignees</loopDataInputRef>
-                <inputDataItem name="reviewAssignee" />
-                <completionCondition>${wf_actualPercent >= 100 || 100 > (100 - wf_actualRejectPercent)}</completionCondition>
-            </multiInstanceLoopCharacteristics>
-        </userTask>
-        <sequenceFlow id="flow2" sourceRef="supervisorReviewTask" targetRef="supervisorReviewDecision"></sequenceFlow>
-        <exclusiveGateway id="supervisorReviewDecision" name="Supervisor Review Decision"></exclusiveGateway>
-        <sequenceFlow id="flow3" sourceRef="supervisorReviewDecision" targetRef="apProcessTask">
-            <conditionExpression xsi:type="tFormalExpression">${wf_actualPercent >= 100}</conditionExpression>
-            <!--
-            <conditionExpression xsi:type="tFormalExpression"><![CDATA[${wf_reviewOutcome == 'Approve'}]]></conditionExpression>
-            -->
-        </sequenceFlow>
-        <sequenceFlow id="flow4" sourceRef="supervisorReviewDecision" targetRef="supervisorRejected">
-            <!--
-            <conditionExpression xsi:type="tFormalExpression"><![CDATA[${wf_reviewOutcome == 'Reject'}]]></conditionExpression>
-            -->
-        </sequenceFlow>
-        <userTask id="supervisorRejected" name="Supervisor Rejected" activiti:assignee="${initiator.properties.userName}" activiti:formKey="zitomediawf:zitoMediaSupervisorRejectedTask">
-            <documentation>The invoice was reviewed and rejected by supervisor. Contact vendor for corrected invoice.</documentation>
-            <extensionElements>
-                <activiti:taskListener event="create" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
-                    <activiti:field name="runAs"><activiti:string>admin</activiti:string></activiti:field>
-                    <activiti:field name="script">
-                        <activiti:string>// Set parallel review params on task, to be kept in history
-                            task.setVariableLocal('wf_reviewerCount', wf_reviewerCount);
-                            task.setVariableLocal('wf_requiredPercent', 100);
-                            task.setVariableLocal('wf_actualPercent', wf_actualPercent);
-                            task.setVariableLocal('wf_approveCount', wf_approveCount);
-
-                            task.description = "Contact vendor for supervisor rejected invoice ";
-                            if ( bpm_package.children.length &gt; 0 ) {
-                                task.description += bpm_package.children[0].properties['cm:name'];
-                            }
-                            if (logger.isLoggingEnabled()) {
-                                logger.log("Zito AP Full Group workflow : Task " + task.id + ":" + " supervisorRejected created " + task.description);
-                            }
-                            if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate
-                            if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;
-                            for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
-                                var payload = bpm_package.children[i];
-                                var parent = payload.parent.parent.parent;
-                                if (parent != null &amp;&amp; parent.childByNamePath('Rejected') != null) {
-                                    var supervisorRejectedFolder = parent.childByNamePath('Rejected').childByNamePath('Supervisor Rejected');
-                                    if (supervisorRejectedFolder != null) {
-                                        payload.move(supervisorRejectedFolder);
-                                        if (logger.isLoggingEnabled()) {
-                                            logger.log("Zito AP Full Group workflow : Task " + task.id + ":" + " supervisorRejected payload moved");
-                                        }
-                                    }
-                                }
-                            }
-                        </activiti:string>
-                    </activiti:field>
-                </activiti:taskListener>
-            </extensionElements>
-        </userTask>
-        <sequenceFlow id="flow6" sourceRef="supervisorRejected" targetRef="endevent1"></sequenceFlow>
-        <userTask id="apProcessTask" name="AP Process Task" activiti:candidateGroups="GROUP_AccountsPayable" activiti:formKey="zitomediawf:zitoMediaAPProcessTask">
-            <extensionElements>
-                <activiti:taskListener event="create" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
-                    <activiti:field name="script">
-                        <activiti:string>// Set parallel review params on task, to be kept in history
-                            task.setVariableLocal('wf_reviewerCount', wf_reviewerCount);
-                            task.setVariableLocal('wf_requiredPercent', 100);
-                            task.setVariableLocal('wf_actualPercent', wf_actualPercent);
-                            task.setVariableLocal('wf_approveCount', wf_approveCount);
-
-                            task.description = "AP processes supervisor approved invoice ";
+                        <activiti:string>task.description = "AP processes invoice ";
                             if ( bpm_package.children.length &gt; 0 ) {
                                 task.description += bpm_package.children[0].properties['cm:name'];
                             }
@@ -208,7 +62,7 @@
                                 }
                             }
                             if (logger.isLoggingEnabled()) {
-                                logger.log("Zito AP Full Group workflow : Task " + task.id + ":" + " apProcessTask created " + task.description);
+                                logger.log("Zito AP Direct workflow : Task " + task.id + ":" + " apProcessTask created " + task.description);
                             }
                         </activiti:string>
                     </activiti:field>
@@ -222,7 +76,7 @@
                                 logger.log("zitomediawf_customerCategory:" + task.getVariable('zitomediawf_customerCategory')) ;
                             }
                             if (logger.isLoggingEnabled()) {
-                                logger.log("Zito AP Full Group workflow : Task " + task.id + ":" + " apProcessTask created " + reviewOutcome);
+                                logger.log("Zito AP Direct workflow : Task " + task.id + ":" + " apProcessTask created " + reviewOutcome);
                             }
                             for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
                                 var payload = bpm_package.children[i];
@@ -231,7 +85,7 @@
                                 payload.properties['zitomedia:status'] = 'AP Approved';
                                 payload.save();
                                 if (logger.isLoggingEnabled()) {
-                                    logger.log("Zito AP Full Group workflow : Task " + task.id + ":" + " apProcessTask Payload " + payload.properties['cm:name'] + " saved!");
+                                    logger.log("Zito AP Direct workflow : Task " + task.id + ":" + " apProcessTask Payload " + payload.properties['cm:name'] + " saved!");
                                 }
                                 var parent = payload.parent.parent.parent;
                                 if (parent != null &amp;&amp; parent.childByNamePath('Processing') != null) {
@@ -239,7 +93,7 @@
                                     if (processingFolder != null) {
                                         payload.move(processingFolder);
                                         if (logger.isLoggingEnabled()) {
-                                            logger.log("Zito AP Full Group workflow : Task " + task.id + ":" + " apProcessTask Payload " + payload.properties['cm:name'] + " moved!");
+                                            logger.log("Zito AP Direct workflow : Task " + task.id + ":" + " apProcessTask Payload " + payload.properties['cm:name'] + " moved!");
                                         }
                                     }
                                 }
@@ -271,9 +125,9 @@
                                 }
                             }
                             if (logger.isLoggingEnabled()) {
-                                logger.log("Zito AP Full Group workflow : Task " + task.id + ":" + task.description);
-                                logger.log("Zito AP Full Group workflow : Task " + task.id + ":" + " finalReviewTask zitomediawf_voucherNumber:" + task.getVariable('zitomediawf_voucherNumber'));
-                                logger.log("Zito AP Full Group workflow : Task " + task.id + ":" + " finalReviewTask zitomediawf_customerCategory:" + task.getVariable('zitomediawf_customerCategory')) ;
+                                logger.log("Zito AP Direct workflow : Task " + task.id + ":" + task.description);
+                                logger.log("Zito AP Direct workflow : Task " + task.id + ":" + " finalReviewTask zitomediawf_voucherNumber:" + task.getVariable('zitomediawf_voucherNumber'));
+                                logger.log("Zito AP Direct workflow : Task " + task.id + ":" + " finalReviewTask zitomediawf_customerCategory:" + task.getVariable('zitomediawf_customerCategory')) ;
                             }
                         </activiti:string>
                     </activiti:field>
@@ -284,7 +138,7 @@
                             execution.setVariable('wf_reviewOutcome', reviewOutcome);
                             execution.setVariable('bpm_assignee', person);
                             if (logger.isLoggingEnabled()) {
-                                logger.log("Zito AP Full Group workflow : Task " + task.id + ":" + " finalReviewTask completed" + reviewOutcome);
+                                logger.log("Zito AP Direct workflow : Task " + task.id + ":" + " finalReviewTask completed" + reviewOutcome);
                             }
                             for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
                                 var payload = bpm_package.children[i];
@@ -301,7 +155,7 @@
                                         if (rejectedFolder != null) {
                                             payload.move(rejectedFolder);
                                             if (logger.isLoggingEnabled()) {
-                                                logger.log("Zito AP Full Group workflow : Task " + task.id + ":" + " finalReviewTask payload moved " + payload.properties["cm:name"]);
+                                                logger.log("Zito AP Direct workflow : Task " + task.id + ":" + " finalReviewTask payload moved " + payload.properties["cm:name"]);
                                             }
                                         }
                                     }
@@ -319,7 +173,7 @@
         <sequenceFlow id="flow14" sourceRef="finalReviewDecision" targetRef="apReviewTask">
             <conditionExpression xsi:type="tFormalExpression"><![CDATA[${wf_reviewOutcome == 'Reject'}]]></conditionExpression>
         </sequenceFlow>
-        <userTask id="apReviewTask" name="AP Review Task" activiti:candidateGroups="GROUP_AccountsPayable" activiti:formKey="zitomediawf:zitoMediaAPReviewTask">
+        <userTask id="apReviewTask" name="AP Review Task" activiti:assignee="julie.petruzzi" activiti:formKey="zitomediawf:zitoMediaAPReviewTask">
             <extensionElements>
                 <activiti:taskListener event="create" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
                     <activiti:field name="script">
@@ -338,9 +192,9 @@
                                 }
                             }
                             if (logger.isLoggingEnabled()) {
-                                logger.log("Zito AP Full Group workflow : Task " + task.id + ":" + " apReviewTask created " + task.description);
-                                logger.log("Zito AP Full Group workflow : Task " + task.id + ":" + " apReviewTask zitomediawf_voucherNumber:" + task.getVariable('zitomediawf_voucherNumber'));
-                                logger.log("Zito AP Full Group workflow : Task " + task.id + ":" + " apReviewTask zitomediawf_customerCategory:" + task.getVariable('zitomediawf_customerCategory')) ;
+                                logger.log("Zito AP Direct workflow : Task " + task.id + ":" + " apReviewTask created " + task.description);
+                                logger.log("Zito AP Direct workflow : Task " + task.id + ":" + " apReviewTask zitomediawf_voucherNumber:" + task.getVariable('zitomediawf_voucherNumber'));
+                                logger.log("Zito AP Direct workflow : Task " + task.id + ":" + " apReviewTask zitomediawf_customerCategory:" + task.getVariable('zitomediawf_customerCategory')) ;
                             }
                         </activiti:string>
                     </activiti:field>
@@ -351,7 +205,7 @@
                             execution.setVariable('wf_reviewOutcome', task.getVariable('wf_reviewOutcome'));
                             execution.setVariable('bpm_assignee', person);
                             if (logger.isLoggingEnabled()) {
-                                logger.log("Zito AP Full Group workflow : Task " + task.id + ":" + " apReviewTask completed " + reviewOutcome);
+                                logger.log("Zito AP Direct workflow : Task " + task.id + ":" + " apReviewTask completed " + reviewOutcome);
                             }
                             for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
                                 var payload = bpm_package.children[i];
@@ -363,14 +217,14 @@
                                     if (parent != null &amp;&amp; parent.childByNamePath('Incoming') != null) {
                                         payload.move(parent.childByNamePath('Incoming'));
                                         if (logger.isLoggingEnabled()) {
-                                            logger.log("Zito AP Full Group workflow : Task " + task.id + ":" + " apReviewTask payload approved and moved " + payload.properties["cm:name]);
+                                            logger.log("Zito AP Direct workflow : Task " + task.id + ":" + " apReviewTask payload approved and moved " + payload.properties["cm:name]);
                                         }
                                     }
                                 } else {
                                     payload.properties['zitomedia:status'] = 'AP Rejected';
                                     payload.save();
                                     if (logger.isLoggingEnabled()) {
-                                        logger.log("Zito AP Full Group workflow : Task " + task.id + ":" + " apReviewTask payload rejected " + payload.properties["cm:name]);
+                                        logger.log("Zito AP Direct workflow : Task " + task.id + ":" + " apReviewTask payload rejected " + payload.properties["cm:name]);
                                     }
                                 }
                             }
@@ -427,9 +281,9 @@
                                 }
                             }
                             if (logger.isLoggingEnabled()) {
-                                logger.log("Zito AP Full Group workflow : Task " + task.id + ":" + " payCustomer " + task.description);
-                                logger.log("Zito AP Full Group workflow : Task " + task.id + ":" + " payCustomer zitomediawf_voucherNumber:" + task.getVariable('zitomediawf_voucherNumber'));
-                                logger.log("Zito AP Full Group workflow : Task " + task.id + ":" + " payCustomer zitomediawf_customerCategory:" + task.getVariable('zitomediawf_customerCategory')) ;
+                                logger.log("Zito AP Direct workflow : Task " + task.id + ":" + " payCustomer " + task.description);
+                                logger.log("Zito AP Direct workflow : Task " + task.id + ":" + " payCustomer zitomediawf_voucherNumber:" + task.getVariable('zitomediawf_voucherNumber'));
+                                logger.log("Zito AP Direct workflow : Task " + task.id + ":" + " payCustomer zitomediawf_customerCategory:" + task.getVariable('zitomediawf_customerCategory')) ;
                             }
                         </activiti:string>
                     </activiti:field>
@@ -441,7 +295,7 @@
                                 payload.properties['zitomedia:status'] = 'Customer Paid';
                                 payload.save();
                                 if (logger.isLoggingEnabled()) {
-                                    logger.log("Zito AP Full Group workflow : Task " + task.id + ":" + " payCustomer payload saved " + payload.properties["cm:name"]);
+                                    logger.log("Zito AP Direct workflow : Task " + task.id + ":" + " payCustomer payload saved " + payload.properties["cm:name"]);
                                 }
                                 var parent = payload.parent.parent.parent;
                                 var customerCategory = payload.properties['zitomedia:customerCategory'];
@@ -450,7 +304,7 @@
                                     if (processedFolder != null) {
                                         payload.move(processedFolder);
                                         if (logger.isLoggingEnabled()) {
-                                            logger.log("Zito AP Full Group workflow : Task " + task.id + ":" + " payCustomer payload moved " + payload.properties["cm:name"]);
+                                            logger.log("Zito AP Direct workflow : Task " + task.id + ":" + " payCustomer payload moved " + payload.properties["cm:name"]);
                                         }
                                     }
                                 }
@@ -480,9 +334,9 @@
                                 }
                             }
                             if (logger.isLoggingEnabled()) {
-                                logger.log("Zito AP Full Group workflow : Task " + task.id + ":" + " processCompleted " +task.description);
-                                logger.log("Zito AP Full Group workflow : Task " + task.id + ":" + " processCompleted zitomediawf_voucherNumber:" + task.getVariable('zitomediawf_voucherNumber'));
-                                logger.log("Zito AP Full Group workflow : Task " + task.id + ":" + " processComplated zitomediawf_customerCategory:" + task.getVariable('zitomediawf_customerCategory')) ;
+                                logger.log("Zito AP Direct workflow : Task " + task.id + ":" + " processCompleted " +task.description);
+                                logger.log("Zito AP Direct workflow : Task " + task.id + ":" + " processCompleted zitomediawf_voucherNumber:" + task.getVariable('zitomediawf_voucherNumber'));
+                                logger.log("Zito AP Direct workflow : Task " + task.id + ":" + " processComplated zitomediawf_customerCategory:" + task.getVariable('zitomediawf_customerCategory')) ;
                             }
                         </activiti:string>
                     </activiti:field>

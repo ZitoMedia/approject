@@ -1,0 +1,5 @@
+<webscript>
+  <shortname>AP Direct Filter</shortname>
+  <description>AP Direct filter</description>
+  <url>/components/workflow/filter/ap-direct</url>
+</webscript>

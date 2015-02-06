@@ -12,10 +12,22 @@
          </properties>
       </component>
 
-       <!-- AP Filter -->
+       <!-- AP Full Group Filter -->
        <component>
            <region-id>ap-filter</region-id>
            <url>/components/workflow/filter/ap</url>
+       </component>
+
+       <!-- AP Full Filter -->
+       <component>
+           <region-id>ap-filter-full</region-id>
+           <url>/components/workflow/filter/ap-full</url>
+       </component>
+
+       <!-- AP Direct Filter -->
+       <component>
+           <region-id>ap-filter-direct</region-id>
+           <url>/components/workflow/filter/ap-direct</url>
        </component>
 
        <!-- PAF Filter -->

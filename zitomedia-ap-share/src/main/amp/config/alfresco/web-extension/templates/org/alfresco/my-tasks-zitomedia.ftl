@@ -25,6 +25,8 @@
          <div class="yui-b" id="alf-filters">
             <@region id="all-filter" scope="template" />
             <@region id="ap-filter" scope="template" />
+            <@region id="ap-filter-full" scope="template" />
+            <@region id="ap-filter-direct" scope="template" />
             <@region id="paf-filter" scope="template" />
             <@region id="others-filter" scope="template" />
             <@region id="customer-filter" scope="template" />

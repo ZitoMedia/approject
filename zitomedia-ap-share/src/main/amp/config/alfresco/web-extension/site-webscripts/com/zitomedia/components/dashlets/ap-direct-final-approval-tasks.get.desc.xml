@@ -1,0 +1,6 @@
+<webscript>
+   <shortname>AP Direct Final Approval Tasks</shortname>
+   <description>Dashlet to list AP Direct final Approvaltasks assigned to the current user</description>
+   <family>user-dashlet</family>
+   <url>/components/dashlets/ap-direct-final-approval-tasks</url>
+</webscript>

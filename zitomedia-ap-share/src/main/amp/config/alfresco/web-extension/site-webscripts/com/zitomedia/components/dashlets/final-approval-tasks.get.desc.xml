@@ -1,5 +1,5 @@
 <webscript>
-   <shortname>AP Final Approval Tasks</shortname>
+   <shortname>AP Full Group Final Approval Tasks</shortname>
    <description>Dashlet to list AP final Approvaltasks assigned to the current user</description>
    <family>user-dashlet</family>
    <url>/components/dashlets/final-approval-tasks</url>

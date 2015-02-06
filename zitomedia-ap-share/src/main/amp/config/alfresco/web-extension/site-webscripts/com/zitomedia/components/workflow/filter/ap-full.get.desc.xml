@@ -1,0 +1,5 @@
+<webscript>
+  <shortname>AP Full Filter</shortname>
+  <description>AP Full filter</description>
+  <url>/components/workflow/filter/ap-full</url>
+</webscript>
