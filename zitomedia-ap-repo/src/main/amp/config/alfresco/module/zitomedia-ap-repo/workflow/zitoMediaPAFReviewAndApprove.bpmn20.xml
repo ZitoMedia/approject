@@ -28,7 +28,7 @@
                             if ( bpm_package.children.length &gt; 0 ) {
                                 task.description += bpm_package.children[0].properties['cm:name'];
                             }
-                            if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate
+                            if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate;
                             if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;
                         </activiti:string>
                     </activiti:field>
@@ -76,7 +76,7 @@
                             if ( bpm_package.children.length &gt; 0 ) {
                             task.description += bpm_package.children[0].properties['cm:name'];
                             }
-                            if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate
+                            if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate;
                             if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;
                         </activiti:string>
                     </activiti:field>
@@ -114,7 +114,7 @@
                             if ( bpm_package.children.length &gt; 0 ) {
                                 task.description += bpm_package.children[0].properties['cm:name'];
                             }
-                            if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate
+                            if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate;
                             if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;
                             for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
                                 var payload = bpm_package.children[i];
@@ -149,7 +149,7 @@
                             if ( bpm_package.children.length &gt; 0 ) {
                                 task.description += bpm_package.children[0].properties['cm:name'];
                             }
-                            if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate
+                            if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate;
                             if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;
                             for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
                                 var payload = bpm_package.children[i];
@@ -208,7 +208,7 @@
                             if ( bpm_package.children.length &gt; 0 ) {
                                 task.description += bpm_package.children[0].properties['cm:name'];
                             }
-                            if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate
+                            if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate;
                             if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;
                             for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
                             }</activiti:string>
@@ -242,7 +242,7 @@
                             if ( bpm_package.children.length &gt; 0 ) {
                                 task.description += bpm_package.children[0].properties['cm:name'];
                             }
-                            if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate
+                            if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate;
                             if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;
                             for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
                             }</activiti:string>

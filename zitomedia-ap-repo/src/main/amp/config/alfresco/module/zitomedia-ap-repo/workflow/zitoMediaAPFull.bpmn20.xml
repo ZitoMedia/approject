@@ -213,16 +213,14 @@
                 </activiti:taskListener>
                 <activiti:taskListener event="complete" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
                     <activiti:field name="script">
-                        <activiti:string>var reviewOutcome = task.getVariable('wf_reviewOutcome');
-                            execution.setVariable('wf_reviewOutcome', task.getVariable('wf_reviewOutcome'));
+                        <activiti:string>if (logger.isLoggingEnabled()) {
+                                logger.log("Zito AP Full workflow : Task " + task.id + ":" + " apProcessTask completed.");
+                            }
                             if (logger.isLoggingEnabled()) {
                                 logger.log("zitomediawf_voucherNumber:" + task.getVariable('zitomediawf_voucherNumber'));
-                                logger.log("zitomediawf_customerCategory:" + task.getVariable('zitomediawf_customerCategory')) ;
+                                logger.log("zitomediawf_customerCategory:" + task.getVariable('zitomediawf_customerCategory'));
                             }
-                            if (logger.isLoggingEnabled()) {
-                                logger.log("Zito AP Full workflow : Task " + task.id + ":" + " apProcessTask created " + reviewOutcome);
-                            }
-                            for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
+                            for (var i = 0, length = bpm_package.children.length; i &lt; length; i++) {
                                 var payload = bpm_package.children[i];
                                 payload.properties['zitomedia:voucherNumber'] = task.getVariable('zitomediawf_voucherNumber');
                                 payload.properties['zitomedia:customerCategory'] = task.getVariable('zitomediawf_customerCategory');
@@ -242,8 +240,7 @@
                                     }
                                 }
                             }
-                            execution.setVariable('bpm_assignee', person);
-                        </activiti:string>
+                            execution.setVariable('bpm_assignee', person);</activiti:string>
                     </activiti:field>
                 </activiti:taskListener>
             </extensionElements>
@@ -258,7 +255,7 @@
                             if ( bpm_package.children.length &gt; 0 ) {
                                 task.description += bpm_package.children[0].properties['cm:name'];
                             }
-                            if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate
+                            if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate;
                             if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;
                             for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
                                 if (bpm_package.children[i].properties['zitomedia:voucherNumber'] != null) {
@@ -325,7 +322,7 @@
                             if ( bpm_package.children.length &gt; 0 ) {
                                 task.description += bpm_package.children[0].properties['cm:name'];
                             }
-                            if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate
+                            if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate;
                             if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;
                             for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
                                 if (bpm_package.children[i].properties['zitomedia:voucherNumber'] != null) {
@@ -391,7 +388,7 @@
                             if ( bpm_package.children.length &gt; 0 ) {
                                 task.description += bpm_package.children[0].properties['cm:name'];
                             }
-                            if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate
+                            if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate;
                             if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;</activiti:string>
                     </activiti:field>
                 </activiti:taskListener>
@@ -414,7 +411,7 @@
                             if ( bpm_package.children.length &gt; 0 ) {
                                 task.description += bpm_package.children[0].properties['cm:name'];
                             }
-                            if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate
+                            if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate;
                             if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;
                             for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
                                 if (bpm_package.children[i].properties['zitomedia:voucherNumber'] != null) {
@@ -467,7 +464,7 @@
                             if ( bpm_package.children.length &gt; 0 ) {
                                 task.description += bpm_package.children[0].properties['cm:name'];
                             }
-                            if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate
+                            if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate;
                             if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;
                             for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
                                 if (bpm_package.children[i].properties['zitomedia:voucherNumber'] != null) {

@@ -1,0 +1,5 @@
+<webscript>
+   <shortname>ZitoMedia Task List Toolbar</shortname>
+   <description>Toolbar for the zitomedia task list</description>
+   <url>/components/workflow/task-list-toolbar-zitomedia</url>
+</webscript>

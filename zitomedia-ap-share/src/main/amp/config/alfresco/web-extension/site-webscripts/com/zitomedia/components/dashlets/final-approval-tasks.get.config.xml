@@ -41,9 +41,9 @@
         <filter type="customerSCHED" parameters="wfName=activiti$ZitomediaMultiLevelReview&amp;customerCategory=SCHED"/>
         <filter type="customerUTIL" parameters="wfName=activiti$ZitomediaMultiLevelReview&amp;customerCategory=UTIL"/>
         <filter type="customerMISC" parameters="wfName=activiti$ZitomediaMultiLevelReview&amp;customerCategory=MISC"/>
-        <!--
-        <filter type="activeTasks" parameters=""/>
-        -->
+
+        <filter type="activeTasks" parameters="wfName=activiti$ZitomediaMultiLevelReview"/>
+
         <filter type="completedTasks" parameters="wfName=activiti$ZitomediaMultiLevelReview&amp;pooledTasks=false&amp;state=COMPLETED"/>
         <!--
         <filter type="finalApprovalTasks"    parameters="wfName=activiti$ZitomediaMultiLevelReview"/>

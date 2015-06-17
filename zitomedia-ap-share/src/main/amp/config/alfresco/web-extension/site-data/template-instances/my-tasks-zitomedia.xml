@@ -69,7 +69,7 @@
       <!-- Toolbar -->
       <component>
          <region-id>toolbar</region-id>
-         <url>/components/workflow/task-list-toolbar</url>
+         <url>/components/workflow/task-list-toolbar-zitomedia</url>
       </component>
 
       <!-- List -->

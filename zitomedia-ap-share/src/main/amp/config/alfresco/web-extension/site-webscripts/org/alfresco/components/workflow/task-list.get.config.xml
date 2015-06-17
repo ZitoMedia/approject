@@ -20,6 +20,9 @@
         <filter id="ap" data="active" parameters="wfName=activiti$ZitomediaMultiLevelReview"/>
         <filter id="ap" data="completed" parameters="wfName=activiti$ZitomediaMultiLevelReview&amp;pooledTasks=false&amp;state=COMPLETED"/>
 
+        <filter id="ap-direct" data="active" parameters="wfName=activiti$ZitoAPDirect"/>
+        <filter id="ap-direct" data="completed" parameters="wfName=activiti$ZitoAPDirect&amp;pooledTasks=false&amp;state=COMPLETED"/>
+
         <filter id="ap-full" data="active" parameters="wfName=activiti$ZitoAPFull"/>
         <filter id="ap-full" data="completed" parameters="wfName=activiti$ZitoAPFull&amp;pooledTasks=false&amp;state=COMPLETED"/>
 

@@ -41,9 +41,9 @@
         <filter type="customerSCHED" parameters="wfName=activiti$ZitoAPDirect&amp;customerCategory=SCHED"/>
         <filter type="customerUTIL" parameters="wfName=activiti$ZitoAPDirect&amp;customerCategory=UTIL"/>
         <filter type="customerMISC" parameters="wfName=activiti$ZitoAPDirect&amp;customerCategory=MISC"/>
-        <!--
-        <filter type="activeTasks" parameters=""/>
-        -->
+
+        <filter type="activeTasks" parameters="wfName=activiti$ZitoAPDirect"/>
+
         <filter type="completedTasks" parameters="wfName=activiti$ZitoAPDirect&amp;pooledTasks=false&amp;state=COMPLETED"/>
         <!--
         <filter type="finalApprovalTasks"    parameters="wfName=activiti$ZitoAPDirect"/>

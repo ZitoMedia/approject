@@ -1,0 +1,10 @@
+<config>
+    <sort-menu>
+        <sort type="dueDes" parameters="sortBy=due&amp;direction=des"/>
+        <sort type="dueAsc" parameters="sortBy=due&amp;direction=asc"/>
+        <sort type="priorityDes" parameters="sortBy=priority&amp;direction=des"/>
+        <sort type="priorityAsc" parameters="sortBy=priority&amp;direction=asc"/>
+        <sort type="nameDes" parameters="sortBy=name&amp;direction=des"/>
+        <sort type="nameAsc" parameters="sortBy=name&amp;direction=asc"/>
+    </sort-menu>
+</config>

@@ -51,7 +51,7 @@
                             if ( bpm_package.children.length &gt; 0 ) {
                                 task.description += bpm_package.children[0].properties['cm:name'];
                             }
-                            if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate
+                            if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate;
                             if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;
                             for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
                                 if (bpm_package.children[i].properties['zitomedia:voucherNumber'] != null) {
@@ -69,14 +69,12 @@
                 </activiti:taskListener>
                 <activiti:taskListener event="complete" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
                     <activiti:field name="script">
-                        <activiti:string>var reviewOutcome = task.getVariable('wf_reviewOutcome');
-                            execution.setVariable('wf_reviewOutcome', task.getVariable('wf_reviewOutcome'));
-                            if (logger.isLoggingEnabled()) {
-                                logger.log("zitomediawf_voucherNumber:" + task.getVariable('zitomediawf_voucherNumber'));
-                                logger.log("zitomediawf_customerCategory:" + task.getVariable('zitomediawf_customerCategory')) ;
+                        <activiti:string>if (logger.isLoggingEnabled()) {
+                            logger.log("Zito AP Direct workflow : Task " + task.id + ":" + " apProcessTask completed.");
                             }
                             if (logger.isLoggingEnabled()) {
-                                logger.log("Zito AP Direct workflow : Task " + task.id + ":" + " apProcessTask created " + reviewOutcome);
+                                logger.log("zitomediawf_voucherNumber:" + task.getVariable('zitomediawf_voucherNumber'));
+                                logger.log("zitomediawf_customerCategory:" + task.getVariable('zitomediawf_customerCategory'));
                             }
                             for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
                                 var payload = bpm_package.children[i];
@@ -114,7 +112,7 @@
                             if ( bpm_package.children.length &gt; 0 ) {
                                 task.description += bpm_package.children[0].properties['cm:name'];
                             }
-                            if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate
+                            if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate;
                             if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;
                             for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
                                 if (bpm_package.children[i].properties['zitomedia:voucherNumber'] != null) {
@@ -181,7 +179,7 @@
                             if ( bpm_package.children.length &gt; 0 ) {
                                 task.description += bpm_package.children[0].properties['cm:name'];
                             }
-                            if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate
+                            if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate;
                             if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;
                             for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
                                 if (bpm_package.children[i].properties['zitomedia:voucherNumber'] != null) {
@@ -247,7 +245,7 @@
                             if ( bpm_package.children.length &gt; 0 ) {
                                 task.description += bpm_package.children[0].properties['cm:name'];
                             }
-                            if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate
+                            if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate;
                             if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;</activiti:string>
                     </activiti:field>
                 </activiti:taskListener>
@@ -270,7 +268,7 @@
                             if ( bpm_package.children.length &gt; 0 ) {
                                 task.description += bpm_package.children[0].properties['cm:name'];
                             }
-                            if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate
+                            if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate;
                             if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;
                             for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
                                 if (bpm_package.children[i].properties['zitomedia:voucherNumber'] != null) {
@@ -323,7 +321,7 @@
                             if ( bpm_package.children.length &gt; 0 ) {
                                 task.description += bpm_package.children[0].properties['cm:name'];
                             }
-                            if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate
+                            if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate;
                             if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;
                             for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
                                 if (bpm_package.children[i].properties['zitomedia:voucherNumber'] != null) {

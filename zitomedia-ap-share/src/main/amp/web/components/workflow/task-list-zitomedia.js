@@ -79,7 +79,16 @@
                         },
                         filterResolver: this.bind(function (filter) {
                             // Reuse method form WorkflowActions
-                            return this.createFilterURLParameters(filter, this.options.filterParameters);
+                            var filterParamters = this.createFilterURLParameters(filter, this.options.filterParameters);
+
+                            if (filterParamters != "") {
+                                filterParamters += "&";
+                            }
+
+                            if (Alfresco.SORT_MENU_BAR_PARAMETERS) {
+                                filterParamters += Alfresco.SORT_MENU_BAR_PARAMETERS;
+                            }
+                            return filterParamters;
                         })
                     },
                     paginator: {
@@ -89,6 +98,13 @@
                         }
                     }
                 });
+
+            YAHOO.Bubbling.on("changeSorter", this.onChangeSorter, this);
+        },
+
+        onChangeSorter: function DL_onChangeSorter(layer, args) {
+            var parameters = this.substituteParameters(args[1].parameters, {});
+            this.widgets.pagingDataTable.loadDataTable(parameters);
         }
     });
 })();
