@@ -7,4 +7,11 @@
           class="com.zitomedia.repo.web.scripts.workflow.TaskInstancesGet"
           parent="abstractWorkflowWebScript">
     </bean>
+
+    <!-- custom behaviours -->
+    <bean id="com.zitomedia.repo.model.ZitoMediaFranchisable" class="com.zitomedia.repo.model.ZitoMediaFranchisable"
+          init-method="init">
+        <property name="serviceRegistry" ref="ServiceRegistry"/>
+        <property name="policyComponent" ref="policyComponent"/>
+    </bean>
 </beans>

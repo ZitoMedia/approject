@@ -23,4 +23,6 @@
     <import resource="classpath:alfresco/module/${project.artifactId}/context/zitomedia-service-context.xml" />
     <import resource="classpath:alfresco/module/${project.artifactId}/context/zitomedia-webscript-context.xml" />
     <import resource="classpath:alfresco/module/${project.artifactId}/context/zitomedia-workflow-context.xml" />
+	<import resource="classpath:alfresco/module/${project.artifactId}/context/zitomedia-action-context.xml" />
+	<import resource="classpath:alfresco/module/${project.artifactId}/context/zitomedia-scheduled-action-context.xml" />
 </beans>

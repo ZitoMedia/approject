@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:activiti="http://activiti.org/bpmn"
+             xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC"
+             xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema"
+             expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://alfresco.org">
+
+    <process isExecutable="true" id="ZitoMediaRenewal" name="ZitoMedia Renewal Process">
+
+        <startEvent id="start"
+                    activiti:formKey="wf:submitAdhocTask" />
+        <sequenceFlow id='flow1'
+                      sourceRef='start'
+                      targetRef='renewalTask'>
+            <extensionElements>
+                <activiti:executionListener event="start"
+                                            class="org.alfresco.repo.workflow.activiti.listener.ScriptExecutionListener">
+                    <activiti:field name="runAs"><activiti:string>admin</activiti:string></activiti:field>
+                    <activiti:field name="script">
+                        <activiti:string>for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
+                            var payload =  bpm_package.children[i];
+                            if (payload.hasAspect('zitomedia:franchisable')) {
+                                payload.properties['zitomedia:renewalStatus'] = 'Processing';
+                                payload.save();
+                            }
+                            }
+                        </activiti:string>
+                    </activiti:field>
+                </activiti:executionListener>
+            </extensionElements>
+        </sequenceFlow>
+
+        <userTask id="renewalTask" name="Renewal Task"
+                  activiti:formKey="wf:adhocTask"
+                  activiti:candidateGroups="GROUP_FA">
+            <extensionElements>
+                <activiti:taskListener event="create" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
+                    <activiti:field name="script">
+                        <activiti:string>
+                            if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate
+                            if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;
+                        </activiti:string>
+                    </activiti:field>
+                </activiti:taskListener>
+                <activiti:taskListener event="complete"
+                                       class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
+                    <activiti:field name="script">
+                        <activiti:string>
+                            execution.setVariable('bpm_assignee', person);
+                        </activiti:string>
+                    </activiti:field>
+                </activiti:taskListener>
+            </extensionElements>
+            <!--
+            <humanPerformer>
+                <resourceAssignmentExpression>
+                    <formalExpression>${bpm_assignee.properties.userName}</formalExpression>
+                </resourceAssignmentExpression>
+            </humanPerformer>
+            -->
+        </userTask>
+
+        <sequenceFlow id='flow2'
+                      sourceRef='renewalTask'
+                      targetRef='verifyTaskDone'>
+            <extensionElements>
+                <activiti:executionListener event="start"
+                                            class="org.alfresco.repo.workflow.activiti.listener.ScriptExecutionListener">
+                    <activiti:field name="runAs"><activiti:string>admin</activiti:string></activiti:field>
+                    <activiti:field name="script">
+                        <activiti:string>for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
+                                var payload =  bpm_package.children[i];
+                                if (payload.hasAspect('zitomedia:franchisable')) {
+                                    payload.properties['zitomedia:renewalStatus'] = 'Pending';
+                                    payload.save();
+                                }
+                            }
+                        </activiti:string>
+                    </activiti:field>
+                </activiti:executionListener>
+            </extensionElements>
+        </sequenceFlow>
+
+        <userTask id="verifyTaskDone" name="Verify Renewal Task Completed."
+                  activiti:formKey="wf:completedAdhocTask" >
+            <documentation>
+                Verify the task was completed.
+            </documentation>
+            <extensionElements>
+                <activiti:taskListener event="create" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
+                    <activiti:field name="script">
+                        <activiti:string>task.description = "Completes renewal process for franchise agreement ";
+                            if ( bpm_package.children.length &gt; 0 ) {
+                                task.description += bpm_package.children[0].properties['cm:name'];
+                            }
+                            if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate
+                            if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;
+                            if (wf_notifyMe) {
+                                var mail = actions.create("mail");
+                                mail.parameters.to = initiator.properties.email;
+                                mail.parameters.subject = "Renewal Task " + bpm_workflowDescription;
+                                mail.parameters.from = bpm_assignee.properties.email;
+                                mail.parameters.text = "It's done";
+                                mail.execute(bpm_package);
+                            }
+                        </activiti:string>
+                    </activiti:field>
+                </activiti:taskListener>
+            </extensionElements>
+            <humanPerformer>
+                <resourceAssignmentExpression>
+                    <formalExpression>${initiator.exists() ? initiator.properties.userName : 'admin'}</formalExpression>
+                </resourceAssignmentExpression>
+            </humanPerformer>
+        </userTask>
+
+        <sequenceFlow id='flow3' sourceRef='verifyTaskDone'
+                      targetRef='theEnd' />
+
+        <endEvent id="theEnd" />
+
+    </process>
+</definitions>

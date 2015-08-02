@@ -84,6 +84,14 @@
                 </list>
             </parameter>
         </constraint>
+        <constraint name="zitomedia:renewalStatusList" type="LIST">
+            <parameter name="allowedValues">
+                <list>
+                    <value>Pending</value>
+                    <value>Processing</value>
+                </list>
+            </parameter>
+        </constraint>
     </constraints>
 
     <types>
@@ -92,6 +100,13 @@
             <parent>cm:content</parent>
             <mandatory-aspects>
                 <aspect>zitomedia:ap</aspect>
+            </mandatory-aspects>
+        </type>
+        <type name="zitomedia:franchiseAgreement">
+            <title>ZitoMedia Franchise Agreement</title>
+            <parent>cm:content</parent>
+            <mandatory-aspects>
+                <aspect>zitomedia:franchisable</aspect>
             </mandatory-aspects>
         </type>
     </types>
@@ -128,6 +143,50 @@
                     <type>d:text</type>
                     <constraints>
                         <constraint ref="zitomedia:pafStatusList"/>
+                    </constraints>
+                </property>
+            </properties>
+        </aspect>
+        <aspect name="zitomedia:franchisable">
+            <title>Franchisable</title>
+            <properties>
+                <property name="zitomedia:franchiseName">
+                    <title>Community/Franchise Name</title>
+                    <type>d:text</type>
+                    <mandatory>true</mandatory>
+                </property>
+                <property name="zitomedia:agreementDate">
+                    <title>Date of Agreement</title>
+                    <type>d:datetime</type>
+                    <mandatory>true</mandatory>
+                </property>
+                <property name="zitomedia:term">
+                    <title>Term</title>
+                    <type>d:text</type>
+                </property>
+                <property name="zitomedia:expirationDate">
+                    <title>Expiration Date</title>
+                    <type>d:datetime</type>
+                    <mandatory>true</mandatory>
+                </property>
+                <property name="zitomedia:firstNotificationDate">
+                    <title>First Notification Date</title>
+                    <type>d:datetime</type>
+                </property>
+                <property name="zitomedia:secondNotificationDate">
+                    <title>Second Notification Date</title>
+                    <type>d:datetime</type>
+                </property>
+                <property name="zitomedia:letterDate">
+                    <title>626 Letter Date</title>
+                    <type>d:datetime</type>
+                </property>
+                <property name="zitomedia:renewalStatus">
+                    <title>Renewal Statu</title>
+                    <type>d:text</type>
+                    <default>Pending</default>
+                    <constraints>
+                        <constraint ref="zitomedia:renewalStatusList"/>
                     </constraints>
                 </property>
             </properties>
