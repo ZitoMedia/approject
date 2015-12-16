@@ -89,13 +89,16 @@ public class ZitoMediaNotifierActionExecuter extends ActionExecuterAbstractBase 
 
                 Boolean startWorkflow = false;
                 String description = "Contact the customer of " + nodeService.getProperty(nodeRef, ContentModel.PROP_NAME);
-                if (firstNotificationDate != null && firstNotificationDate.getTime() < now) {
-                    description += "(First Notification is due)";
+
+                Date secondNotificationDate = (Date) nodeService.getProperty(nodeRef, ZitoMediaModel.PROP_ZITOMEDIA_SECOND_NOTIFICATION_DATE);
+                if (secondNotificationDate != null && secondNotificationDate.getTime() < now) {
+                    description += "(Second Notification is due)";
                     startWorkflow = true;
-                } else {
-                    Date secondNotificationDate = (Date) nodeService.getProperty(nodeRef, ZitoMediaModel.PROP_ZITOMEDIA_SECOND_NOTIFICATION_DATE);
-                    if (secondNotificationDate != null && secondNotificationDate.getTime() < now) {
-                        description += "(Second Notification is due)";
+                }
+
+                if (!startWorkflow) {
+                    if (firstNotificationDate != null && firstNotificationDate.getTime() < now) {
+                        description += "(First Notification is due)";
                         startWorkflow = true;
                     }
                 }
@@ -106,7 +109,7 @@ public class ZitoMediaNotifierActionExecuter extends ActionExecuterAbstractBase 
                     WorkflowPath wfPath = workflowService.startWorkflow(wfDefinition.getId(), parameters);
 
                     if (logger.isDebugEnabled()) {
-                        logger.debug("Started workflow " + wfPath.toString() + " and assigned to group " + groupName);
+                        logger.debug("Started workflow " + wfPath.toString() + " and assigned to group " + groupName + "(" + description + ")");
                     }
                 } else {
                     if (logger.isDebugEnabled()) {
