@@ -1,0 +1,33 @@
+Hi, Jared
+
+Here is the list of commands you may need depends on your workflow
+
+First, login as admin.
+
+Open a tab and go to the workflow console
+
+Open another tab and use it find the payload document details page. Then find the workflow link on the right side menu. Click on it and it shows you the current task as well as history of the task.
+
+Open the link on the current task in a new tab and write down the task identifier
+
+Go to the workflow console and get the details of the task (replace the number with your actual task identifier)
+
+desc task activiti$2645853
+
+If the task needs "Approve" and "Reject" input from the user, you may want to set the reviewOutcome to Approve if you need
+
+update task activiti$41043 wf:reviewOutcome=Approve
+
+You can then end the task with command such as
+
+end task activiti$41043
+
+If the current task has not been assigned to any user ( some tasks will be assigned to group), you can use following command to assign to a particular user (replace the task id and user name)
+
+update task activiti$41089 cm:owner=anna
+
+You can keep repeating the above steps until there is no task for that workflow.
+
+Thanks!
+
+Yong

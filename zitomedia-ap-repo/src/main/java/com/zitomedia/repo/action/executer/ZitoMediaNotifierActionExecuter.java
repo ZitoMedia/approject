@@ -87,22 +87,31 @@ public class ZitoMediaNotifierActionExecuter extends ActionExecuterAbstractBase 
                 Long now = new Date().getTime();
                 Date firstNotificationDate = (Date) nodeService.getProperty(nodeRef, ZitoMediaModel.PROP_ZITOMEDIA_FIRST_NOTIFICATION_DATE);
 
+                Boolean startWorkflow = false;
                 String description = "Contact the customer of " + nodeService.getProperty(nodeRef, ContentModel.PROP_NAME);
                 if (firstNotificationDate != null && firstNotificationDate.getTime() < now) {
                     description += "(First Notification is due)";
+                    startWorkflow = true;
                 } else {
                     Date secondNotificationDate = (Date) nodeService.getProperty(nodeRef, ZitoMediaModel.PROP_ZITOMEDIA_SECOND_NOTIFICATION_DATE);
                     if (secondNotificationDate != null && secondNotificationDate.getTime() < now) {
                         description += "(Second Notification is due)";
+                        startWorkflow = true;
                     }
                 }
 
                 parameters.put(WorkflowModel.PROP_WORKFLOW_DESCRIPTION, description);
 
-                WorkflowPath wfPath = workflowService.startWorkflow(wfDefinition.getId(), parameters);
+                if (startWorkflow) {
+                    WorkflowPath wfPath = workflowService.startWorkflow(wfDefinition.getId(), parameters);
 
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Started workflow " + wfPath.toString() + " and assigned to group " + groupName);
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Started workflow " + wfPath.toString() + " and assigned to group " + groupName);
+                    }
+                } else {
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Not Starting workflow since no date is due");
+                    }
                 }
             } else {
                 logger.error("Failed to find group with name " + groupName);
