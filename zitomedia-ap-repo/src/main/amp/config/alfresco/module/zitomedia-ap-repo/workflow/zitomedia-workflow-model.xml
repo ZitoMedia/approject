@@ -117,6 +117,40 @@
         <type name="zitomediawf:zitoMediaPAFCompletedTask">
             <parent>wf:approvedTask</parent>
         </type>
+
+        <!-- Capital -->
+        <type name="zitomediawf:zitoMediaCapitalManagerReviewTask">
+            <parent>wf:activitiReviewTask</parent>
+            <mandatory-aspects>
+                <aspect>zitomediawf:assignee</aspect>
+            </mandatory-aspects>
+        </type>
+        <type name="zitomediawf:zitoMediaCapitalSecondManagerReviewTask">
+            <parent>wf:activitiReviewTask</parent>
+        </type>
+        <type name="zitomediawf:zitoMediaCapitalManagerRejectedTask">
+            <parent>wf:rejectedTask</parent>
+        </type>
+        <type name="zitomediawf:zitoMediaCapitalFinalReviewTask">
+            <parent>wf:activitiReviewTask</parent>
+            <mandatory-aspects>
+                <aspect>zitomediawf:assignee</aspect>
+            </mandatory-aspects>
+        </type>
+        <type name="zitomediawf:zitoMediaCapitalPOPrepareTask">
+            <parent>bpm:workflowTask</parent>
+            <overrides>
+                <property name="bpm:packageActionGroup">
+                    <default>add_package_item_actions</default>
+                </property>
+            </overrides>
+        </type>
+        <type name="zitomediawf:zitoMediaCapitalAccountingProcessTask">
+            <parent>bpm:workflowTask</parent>
+        </type>
+        <type name="zitomediawf:zitoMediaCapitalCompletedTask">
+            <parent>wf:approvedTask</parent>
+        </type>
     </types>
 
     <aspects>

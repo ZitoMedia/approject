@@ -29,6 +29,9 @@
         <filter id="paf" data="active" parameters="wfName=activiti$ZitomediaPAFMultiLevelReview"/>
         <filter id="paf" data="completed" parameters="wfName=activiti$ZitomediaPAFMultiLevelReview&amp;pooledTasks=false&amp;state=COMPLETED"/>
 
+        <filter id="capital" data="active" parameters="wfName=activiti$ZitomediaCapitalMultiLevelReview"/>
+        <filter id="capital" data="completed" parameters="wfName=activiti$ZitomediaCapitalMultiLevelReview&amp;pooledTasks=false&amp;state=COMPLETED"/>
+
         <filter id="others" data="active" parameters="customExclude=zitomediawf:*"/>
         <filter id="others" data="completed" parameters="customExclude=zitomediawf:*&amp;pooledTasks=false&amp;state=COMPLETED"/>
 

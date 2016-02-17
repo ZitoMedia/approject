@@ -92,6 +92,20 @@
                 </list>
             </parameter>
         </constraint>
+        <constraint name="zitomedia:capitalStatusList" type="LIST">
+            <parameter name="allowedValues">
+                <list>
+                    <value>Manager Assigned</value>
+                    <value>Manager Approved</value>
+                    <value>Manager Rejected</value>
+                    <value>Final Assigned</value>
+                    <value>Final Approved</value>
+                    <value>Final Rejected</value>
+                    <value>PO Prepared</value>
+                    <value>Accounting Processed</value>
+                </list>
+            </parameter>
+        </constraint>
     </constraints>
 
     <types>
@@ -187,6 +201,18 @@
                     <default>Pending</default>
                     <constraints>
                         <constraint ref="zitomedia:renewalStatusList"/>
+                    </constraints>
+                </property>
+            </properties>
+        </aspect>
+        <aspect name="zitomedia:capital">
+            <title>PAFable</title>
+            <properties>
+                <property name="zitomedia:capitalStatus">
+                    <title>Status</title>
+                    <type>d:text</type>
+                    <constraints>
+                        <constraint ref="zitomedia:capitalStatusList"/>
                     </constraints>
                 </property>
             </properties>

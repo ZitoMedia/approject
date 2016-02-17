@@ -1,0 +1,5 @@
+<webscript>
+  <shortname>Capital Filter</shortname>
+  <description>Capital filter</description>
+  <url>/components/workflow/filter/capital</url>
+</webscript>

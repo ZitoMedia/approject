@@ -1,0 +1,29 @@
+<config>
+    <max-items>50</max-items>
+    <filter-menu>
+        <!--
+           The value of the "parameters" attribute will be added to the end of the task-instances webscript url
+
+           Note that it is possible to create dynamic values by using the following keys inside "{}":
+            * {0dt} - resolves to a iso08601 datetime representation of the current date and time
+            * {0d} - resolves to a iso8601 date representation of the current day
+            * {-7d} - resolves to a iso8601 date representation of the current day rolled the given number of days back
+            * {+7d} - resolves to a iso8601 date representation of the current day rolled the given number of days forward
+        -->
+        <filter type="activeTasks" parameters="wfName=activiti$ZitomediaCapitalMultiLevelReview"/>
+        <filter type="completedTasks" parameters="wfName=activiti$ZitomediaCapitalMultiLevelReview&amp;pooledTasks=false&amp;state=COMPLETED"/>
+        <filter type="highPriorityTasks"     parameters="wfName=activiti$ZitomediaCapitalMultiLevelReview&amp;priority=1"/>
+        <filter type="tasksDueToday"         parameters="wfName=activiti$ZitomediaCapitalMultiLevelReview&amp;dueAfter={-1d}&amp;dueBefore={0d}"/>
+        <filter type="tasksAssignedToMe"     parameters="wfName=activiti$ZitomediaCapitalMultiLevelReview&amp;pooledTasks=false"/>
+        <filter type="unassignedPooledTasks" parameters="wfName=activiti$ZitomediaCapitalMultiLevelReview&amp;pooledTasks=true" />
+        <filter type="overdueTasks"          parameters="wfName=activiti$ZitomediaCapitalMultiLevelReview&amp;dueBefore={-1d}"/>
+    </filter-menu>
+    <sort-menu>
+        <sort type="dueDes" parameters="sortBy=due&amp;direction=des"/>
+        <sort type="dueAsc" parameters="sortBy=due&amp;direction=asc"/>
+        <sort type="priorityDes" parameters="sortBy=priority&amp;direction=des"/>
+        <sort type="priorityAsc" parameters="sortBy=priority&amp;direction=asc"/>
+        <sort type="nameDes" parameters="sortBy=name&amp;direction=des"/>
+        <sort type="nameAsc" parameters="sortBy=name&amp;direction=asc"/>
+    </sort-menu>
+</config>

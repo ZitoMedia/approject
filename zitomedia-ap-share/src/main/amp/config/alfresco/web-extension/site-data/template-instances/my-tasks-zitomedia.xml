@@ -36,6 +36,12 @@
            <url>/components/workflow/filter/paf</url>
        </component>
 
+       <!-- Capital Filter -->
+       <component>
+           <region-id>capital-filter</region-id>
+           <url>/components/workflow/filter/capital</url>
+       </component>
+
        <!-- PAF Filter -->
        <component>
            <region-id>others-filter</region-id>

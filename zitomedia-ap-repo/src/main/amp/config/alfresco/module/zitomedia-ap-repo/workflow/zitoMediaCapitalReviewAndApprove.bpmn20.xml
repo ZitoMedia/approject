@@ -1,0 +1,351 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://activiti.org/bpmn20">
+    <process id="ZitomediaCapitalMultiLevelReview" name="Zitomedia Capital Review And Approve Activiti Process" isExecutable="true">
+        <startEvent id="start" activiti:formKey="wf:submitReviewTask"></startEvent>
+        <sequenceFlow id="flow1" sourceRef="start" targetRef="capitalManagerReviewTask">
+            <extensionElements>
+                <activiti:executionListener event="start"
+                                            class="org.alfresco.repo.workflow.activiti.listener.ScriptExecutionListener">
+                    <activiti:field name="script">
+                        <activiti:string>for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
+                                var payload =  bpm_package.children[i];
+                                if (!payload.hasAspect('zitomedia:capital')) {
+                                    payload.addAspect('zitomedia:capital');
+                                }
+                                payload.properties['zitomedia:capitalStatus'] = 'Manager Assigned';
+                                payload.save();
+                            }
+                        </activiti:string>
+                    </activiti:field>
+                </activiti:executionListener>
+            </extensionElements>
+        </sequenceFlow>
+        <userTask id="capitalManagerReviewTask" name="Capital Manager Review Task" activiti:formKey="zitomediawf:zitoMediaCapitalManagerReviewTask">
+            <extensionElements>
+                <activiti:taskListener event="create" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
+                    <activiti:field name="script">
+                        <activiti:string>task.description = "Manager reviews Capital document ";
+                            if ( bpm_package.children.length &gt; 0 ) {
+                                task.description += bpm_package.children[0].properties['cm:name'];
+                            }
+                            if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate;
+                            if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;
+                        </activiti:string>
+                    </activiti:field>
+                </activiti:taskListener>
+                <activiti:taskListener event="complete" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
+                    <activiti:field name="script">
+                        <activiti:string>var reviewOutcome = task.getVariable('wf_reviewOutcome');
+                            execution.setVariable('wf_reviewOutcome', reviewOutcome);
+                            // Optional second-level manager
+                            var optionalAssignee = task.getVariable('zitomediawf_assignee');
+                            execution.setVariable('zitomediawf_assignee', optionalAssignee);
+                            if (optionalAssignee != null) {
+                                if (logger.isLoggingEnabled()) {
+                                    logger.log("Optional second level manager " + optionalAssignee.properties.userName);
+                                }
+                            }
+                            for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
+                                if (!bpm_package.children[i].hasAspect('zitomedia:capital')) {
+                                    bpm_package.children[i].addAspect('zitomedia:capital');
+                                    bpm_package.children[i].save();
+                                }
+                                if (reviewOutcome == 'Approve') {
+                                    bpm_package.children[i].properties['zitomedia:capitalStatus'] = 'Manager Approved';
+                                } else {
+                                    bpm_package.children[i].properties['zitomedia:capitalStatus'] = 'Manager Rejected';
+                                }
+                                bpm_package.children[i].save();
+                            }
+                        </activiti:string>
+                    </activiti:field>
+                </activiti:taskListener>
+            </extensionElements>
+            <humanPerformer>
+                <resourceAssignmentExpression>
+                    <formalExpression>${bpm_assignee.properties.userName}</formalExpression>
+                </resourceAssignmentExpression>
+            </humanPerformer>
+        </userTask>
+
+        <userTask id="capitalSecondManagerReviewTask" name="Capital Second Manager Review Task" activiti:formKey="zitomediawf:zitoMediaCapitalSecondManagerReviewTask">
+            <extensionElements>
+                <activiti:taskListener event="create" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
+                    <activiti:field name="script">
+                        <activiti:string>task.description = "Second Manager reviews Capital document ";
+                            if ( bpm_package.children.length &gt; 0 ) {
+                            task.description += bpm_package.children[0].properties['cm:name'];
+                            }
+                            if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate;
+                            if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;
+                        </activiti:string>
+                    </activiti:field>
+                </activiti:taskListener>
+                <activiti:taskListener event="complete" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
+                    <activiti:field name="script">
+                        <activiti:string>var reviewOutcome = task.getVariable('wf_reviewOutcome');
+                            execution.setVariable('wf_reviewOutcome', reviewOutcome);
+                        </activiti:string>
+                    </activiti:field>
+                </activiti:taskListener>
+            </extensionElements>
+            <humanPerformer>
+                <resourceAssignmentExpression>
+                    <formalExpression>${zitomediawf_assignee.properties.userName}</formalExpression>
+                </resourceAssignmentExpression>
+            </humanPerformer>
+        </userTask>
+
+        <sequenceFlow id="flow2" sourceRef="capitalManagerReviewTask" targetRef="capitalManagerReviewDecision"></sequenceFlow>
+        <exclusiveGateway id="capitalManagerReviewDecision" name="Capital Manager Review Decision"></exclusiveGateway>
+        <sequenceFlow id="flow3" sourceRef="capitalManagerReviewDecision" targetRef="capitalFinalReviewTask">
+            <conditionExpression xsi:type="tFormalExpression"><![CDATA[${wf_reviewOutcome == 'Approve' && (zitomediawf_assignee == null || !zitomediawf_assignee.exists())}]]></conditionExpression>
+        </sequenceFlow>
+        <sequenceFlow id="flow4" sourceRef="capitalManagerReviewDecision" targetRef="capitalManagerRejected">
+            <conditionExpression xsi:type="tFormalExpression"><![CDATA[${wf_reviewOutcome == 'Reject'}]]></conditionExpression>
+        </sequenceFlow>
+        <userTask id="capitalManagerRejected" name="Capital Manager Rejected" activiti:assignee="${initiator.properties.userName}" activiti:formKey="zitomediawf:zitoMediaCapitalManagerRejectedTask">
+            <documentation>The Capital document was reviewed and rejected by manager.</documentation>
+            <extensionElements>
+                <activiti:taskListener event="create" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
+                    <activiti:field name="runAs"><activiti:string>admin</activiti:string></activiti:field>
+                    <activiti:field name="script">
+                        <activiti:string>task.description = "Review manager rejected Capital document ";
+                            if ( bpm_package.children.length &gt; 0 ) {
+                                task.description += bpm_package.children[0].properties['cm:name'];
+                            }
+                            if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate;
+                            if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;
+                            for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
+                                var payload = bpm_package.children[i];
+
+                            }
+                        </activiti:string>
+                    </activiti:field>
+                </activiti:taskListener>
+            </extensionElements>
+        </userTask>
+        <sequenceFlow id="flow6" sourceRef="capitalManagerRejected" targetRef="capitalEndEvent"></sequenceFlow>
+
+        <sequenceFlow id="flow7" sourceRef="capitalManagerReviewDecision" targetRef="capitalSecondManagerReviewTask">
+            <conditionExpression xsi:type="tFormalExpression"><![CDATA[${wf_reviewOutcome == 'Approve' && zitomediawf_assignee != null && zitomediawf_assignee.exists()}]]></conditionExpression>
+        </sequenceFlow>
+        <exclusiveGateway id="capitalSecondManagerReviewDecision" name="Capital Second Manager Review Decision"></exclusiveGateway>
+        <sequenceFlow id="flow8" sourceRef="capitalSecondManagerReviewTask" targetRef="capitalSecondManagerReviewDecision"></sequenceFlow>
+        <sequenceFlow id="flow9" sourceRef="capitalSecondManagerReviewDecision" targetRef="capitalFinalReviewTask">
+            <conditionExpression xsi:type="tFormalExpression"><![CDATA[${wf_reviewOutcome == 'Approve'}]]></conditionExpression>
+        </sequenceFlow>
+        <sequenceFlow id="flow10" sourceRef="capitalSecondManagerReviewDecision" targetRef="capitalManagerRejected">
+            <conditionExpression xsi:type="tFormalExpression"><![CDATA[${wf_reviewOutcome == 'Reject'}]]></conditionExpression>
+        </sequenceFlow>
+
+        <exclusiveGateway id="capitalFinalReviewDecision" name="Capital Final Review Decision"></exclusiveGateway>
+        <userTask id="capitalFinalReviewTask" name="Capital Final Review Task" activiti:assignee="james.rigas" activiti:formKey="zitomediawf:zitoMediaCapitalFinalReviewTask">
+            <extensionElements>
+                <activiti:taskListener event="create" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
+                    <activiti:field name="runAs"><activiti:string>admin</activiti:string></activiti:field>
+                    <activiti:field name="script">
+                        <activiti:string>task.description = "Performs final review of Capital document ";
+                            if ( bpm_package.children.length &gt; 0 ) {
+                                task.description += bpm_package.children[0].properties['cm:name'];
+                            }
+                            if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate;
+                            if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;
+                            /*
+                            for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
+                                var payload = bpm_package.children[i];
+                                var parent = payload.parent.parent.parent;
+                                if (parent != null &amp;&amp; parent.childByNamePath('Processing') != null) {
+                                    var processingFolder = parent.childByNamePath('Processing').childByNamePath(initiator.properties.userName);
+                                    if (processingFolder != null) {
+                                        payload.move(processingFolder);
+                                    }
+                                }
+                            }
+                            */
+                        </activiti:string>
+                    </activiti:field>
+                </activiti:taskListener>
+                <activiti:taskListener event="complete" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
+                    <activiti:field name="script">
+                        <activiti:string>var reviewOutcome = task.getVariable('wf_reviewOutcome');
+                            execution.setVariable('wf_reviewOutcome', reviewOutcome);
+                            var optionalAssignee = task.getVariable('zitomediawf_assignee');
+                            execution.setVariable('zitomediawf_assignee', optionalAssignee);
+                            //execution.setVariable('bpm_assignee', person);
+                            for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
+                                var payload = bpm_package.children[i];
+                                if (reviewOutcome == 'Approve') {
+                                    payload.properties['zitomedia:capitalStatus'] = 'Final Approved';
+                                    payload.save();
+                                } else {
+                                    payload.properties['zitomedia:capitalStatus'] = 'Final Rejected';
+                                    payload.save();
+                                    /*
+                                    var parent = payload.parent.parent.parent;
+                                    if (parent != null &amp;&amp; parent.childByNamePath('Supervisors') != null) {
+                                        var supervisorFolder = parent.childByNamePath('Supervisors').childByNamePath(initiator.properties.userName);
+                                        if (supervisorFolder != null) {
+                                            payload.move(supervisorFolder);
+                                        }
+                                    }
+                                    */
+                                }
+                            }
+                        </activiti:string>
+                    </activiti:field>
+                </activiti:taskListener>
+            </extensionElements>
+        </userTask>
+        <sequenceFlow id="flow12" sourceRef="capitalFinalReviewTask" targetRef="capitalFinalReviewDecision"></sequenceFlow>
+        <sequenceFlow id="flow13" sourceRef="capitalFinalReviewDecision" targetRef="capitalPOPrepare">
+            <conditionExpression xsi:type="tFormalExpression"><![CDATA[${wf_reviewOutcome == 'Approve' && (zitomediawf_assignee != null && zitomediawf_assignee.exists())}]]></conditionExpression>
+        </sequenceFlow>
+        <sequenceFlow id="flow20" sourceRef="capitalFinalReviewDecision" targetRef="capitalPOPrepareGroup">
+            <conditionExpression xsi:type="tFormalExpression"><![CDATA[${wf_reviewOutcome == 'Approve' && (zitomediawf_assignee == null || !zitomediawf_assignee.exists())}]]></conditionExpression>
+        </sequenceFlow>
+        <sequenceFlow id="flow14" sourceRef="capitalFinalReviewDecision" targetRef="capitalManagerReviewTask">
+            <conditionExpression xsi:type="tFormalExpression"><![CDATA[${wf_reviewOutcome == 'Reject'}]]></conditionExpression>
+        </sequenceFlow>
+ 
+        <userTask id="capitalPOPrepare" name="Capital PO Prepare" activiti:formKey="zitomediawf:zitoMediaCapitalPOPrepareTask">
+            <documentation>The Capital PO needs to be prepared and attached to the workflow.</documentation>
+            <extensionElements>
+                <activiti:taskListener event="create" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
+                    <activiti:field name="script">
+                        <activiti:string>task.description = "Prepare Capital PO for ";
+                            if ( bpm_package.children.length &gt; 0 ) {
+                                task.description += bpm_package.children[0].properties['cm:name'];
+                            }
+                            if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate;
+                            if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;
+                            for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
+                            }</activiti:string>
+                    </activiti:field>
+                </activiti:taskListener>
+                <activiti:taskListener event="complete" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
+                    <activiti:field name="script">
+                        <activiti:string>for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
+                                var payload = bpm_package.children[i];
+                                payload.properties['zitomedia:capitalStatus'] = 'PO Prepared';
+                                payload.save();
+                                /*
+                                var parent = payload.parent.parent.parent;
+                                if (parent != null &amp;&amp; parent.childByNamePath('Prepared') != null) {
+                                    var processedFolder = parent.childByNamePath('Prepared').childByNamePath(initiator.properties.userName);
+                                    if (processedFolder != null) {
+                                        payload.move(processedFolder);
+                                    }
+                                }
+                                */
+                            }
+                        </activiti:string>
+                    </activiti:field>
+                </activiti:taskListener>
+            </extensionElements>
+            <humanPerformer>
+                <resourceAssignmentExpression>
+                    <formalExpression>${zitomediawf_assignee.properties.userName}</formalExpression>
+                </resourceAssignmentExpression>
+            </humanPerformer>
+        </userTask>
+
+        <userTask id="capitalPOPrepareGroup" name="Capital PO Prepare" activiti:candidateGroups="GROUP_CapProgPOPrep" activiti:formKey="zitomediawf:zitoMediaCapitalPOPrepareTask">
+            <documentation>The Capital PO needs to be prepared and attached to the workflow.</documentation>
+            <extensionElements>
+                <activiti:taskListener event="create" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
+                    <activiti:field name="script">
+                        <activiti:string>task.description = "Prepare Capital PO for ";
+                            if ( bpm_package.children.length &gt; 0 ) {
+                            task.description += bpm_package.children[0].properties['cm:name'];
+                            }
+                            if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate;
+                            if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;
+                            for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
+                            }</activiti:string>
+                    </activiti:field>
+                </activiti:taskListener>
+                <activiti:taskListener event="complete" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
+                    <activiti:field name="script">
+                        <activiti:string>for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
+                            var payload = bpm_package.children[i];
+                            payload.properties['zitomedia:capitalStatus'] = 'PO Prepared';
+                            payload.save();
+                            /*
+                            var parent = payload.parent.parent.parent;
+                            if (parent != null &amp;&amp; parent.childByNamePath('Prepared') != null) {
+                            var processedFolder = parent.childByNamePath('Prepared').childByNamePath(initiator.properties.userName);
+                            if (processedFolder != null) {
+                            payload.move(processedFolder);
+                            }
+                            }
+                            */
+                            }
+                        </activiti:string>
+                    </activiti:field>
+                </activiti:taskListener>
+            </extensionElements>
+        </userTask>
+
+        <sequenceFlow id="flow18" sourceRef="capitalPOPrepare" targetRef="capitalAccountingProcess"></sequenceFlow>
+        <sequenceFlow id="flow19" sourceRef="capitalPOPrepareGroup" targetRef="capitalAccountingProcess"></sequenceFlow>
+
+        <userTask id="capitalAccountingProcess" name="Capital Accounting Process" activiti:assignee="deb.kelley" activiti:formKey="zitomediawf:zitoMediaCapitalAccountingProcessTask">
+            <documentation>The Capital document has been approved and needs to be processed.</documentation>
+            <extensionElements>
+                <activiti:taskListener event="create" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
+                    <activiti:field name="script">
+                        <activiti:string>task.description = "Process Capital document ";
+                            if ( bpm_package.children.length &gt; 0 ) {
+                            task.description += bpm_package.children[0].properties['cm:name'];
+                            }
+                            if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate;
+                            if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;
+                            for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
+                            }</activiti:string>
+                    </activiti:field>
+                </activiti:taskListener>
+                <activiti:taskListener event="complete" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
+                    <activiti:field name="script">
+                        <activiti:string>for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
+                            var payload = bpm_package.children[i];
+                            payload.properties['zitomedia:capitalStatus'] = 'Accounting Processed';
+                            payload.save();
+                            /*
+                            var parent = payload.parent.parent.parent;
+                            if (parent != null &amp;&amp; parent.childByNamePath('Processed') != null) {
+                                var processedFolder = parent.childByNamePath('Processed').childByNamePath(initiator.properties.userName);
+                                if (processedFolder != null) {
+                                    payload.move(processedFolder);
+                                }
+                            }
+                            */
+                            }
+                        </activiti:string>
+                    </activiti:field>
+                </activiti:taskListener>
+            </extensionElements>
+        </userTask>
+
+        <userTask id="capitalProcessCompleted" name="Capital Process Completed" activiti:assignee="${initiator.properties.userName}" activiti:formKey="zitomediawf:zitoMediaCapitalCompletedTask">
+            <documentation>Process completed.</documentation>
+            <extensionElements>
+                <activiti:taskListener event="create" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
+                    <activiti:field name="script">
+                        <activiti:string>task.description = "Completes Capital review process for Document ";
+                            if ( bpm_package.children.length &gt; 0 ) {
+                                task.description += bpm_package.children[0].properties['cm:name'];
+                            }
+                            if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate;
+                            if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;
+                            for (var i = 0, length = bpm_package.children.length ; i &lt; length ; i++) {
+                            }</activiti:string>
+                    </activiti:field>
+                </activiti:taskListener>
+            </extensionElements>
+        </userTask>
+        <sequenceFlow id="flow15" sourceRef="capitalAccountingProcess" targetRef="capitalProcessCompleted"></sequenceFlow>
+        <endEvent id="capitalEndEvent" name="End"></endEvent>
+        <sequenceFlow id="flow17" sourceRef="capitalProcessCompleted" targetRef="capitalEndEvent"></sequenceFlow>
+    </process>
+</definitions>

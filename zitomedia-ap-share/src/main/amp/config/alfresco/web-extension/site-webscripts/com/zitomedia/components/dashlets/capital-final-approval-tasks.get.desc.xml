@@ -1,0 +1,6 @@
+<webscript>
+   <shortname>Capital Final Approval Tasks</shortname>
+   <description>Dashlet to list Capital final Approvaltasks assigned to the current user</description>
+   <family>user-dashlet</family>
+   <url>/components/dashlets/capital-final-approval-tasks</url>
+</webscript>

@@ -28,6 +28,7 @@
             <@region id="ap-filter-full" scope="template" />
             <@region id="ap-filter-direct" scope="template" />
             <@region id="paf-filter" scope="template" />
+            <@region id="capital-filter" scope="template" />
             <@region id="others-filter" scope="template" />
             <@region id="customer-filter" scope="template" />
             <@region id="due-filter" scope="template" />
