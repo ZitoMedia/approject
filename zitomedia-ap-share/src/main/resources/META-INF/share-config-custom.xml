@@ -1849,7 +1849,7 @@
         </forms>
     </config>
 
-    <config evaluator="task-type" condition="zitoMediaCapitalCompletedTask">
+    <config evaluator="task-type" condition="zitomediawf:zitoMediaCapitalCompletedTask">
         <forms>
             <form>
                 <field-visibility>

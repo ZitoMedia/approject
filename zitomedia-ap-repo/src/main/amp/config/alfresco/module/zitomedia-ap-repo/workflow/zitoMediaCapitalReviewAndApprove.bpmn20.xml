@@ -287,9 +287,10 @@
             </extensionElements>
         </userTask>
 
-        <sequenceFlow id="flow18" sourceRef="capitalPOPrepare" targetRef="capitalAccountingProcess"></sequenceFlow>
-        <sequenceFlow id="flow19" sourceRef="capitalPOPrepareGroup" targetRef="capitalAccountingProcess"></sequenceFlow>
+        <sequenceFlow id="flow18" sourceRef="capitalPOPrepare" targetRef="capitalProcessCompleted"></sequenceFlow>
+        <sequenceFlow id="flow19" sourceRef="capitalPOPrepareGroup" targetRef="capitalProcessCompleted"></sequenceFlow>
 
+        <!--
         <userTask id="capitalAccountingProcess" name="Capital Accounting Process" activiti:assignee="deb.kelley" activiti:formKey="zitomediawf:zitoMediaCapitalAccountingProcessTask">
             <documentation>The Capital document has been approved and needs to be processed.</documentation>
             <extensionElements>
@@ -326,7 +327,7 @@
                 </activiti:taskListener>
             </extensionElements>
         </userTask>
-
+        -->
         <userTask id="capitalProcessCompleted" name="Capital Process Completed" activiti:assignee="${initiator.properties.userName}" activiti:formKey="zitomediawf:zitoMediaCapitalCompletedTask">
             <documentation>Process completed.</documentation>
             <extensionElements>
@@ -344,7 +345,9 @@
                 </activiti:taskListener>
             </extensionElements>
         </userTask>
+        <!--
         <sequenceFlow id="flow15" sourceRef="capitalAccountingProcess" targetRef="capitalProcessCompleted"></sequenceFlow>
+        -->
         <endEvent id="capitalEndEvent" name="End"></endEvent>
         <sequenceFlow id="flow17" sourceRef="capitalProcessCompleted" targetRef="capitalEndEvent"></sequenceFlow>
     </process>
